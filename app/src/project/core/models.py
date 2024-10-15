@@ -663,36 +663,3 @@ class RawSpecsSnapshot(models.Model):
         indexes = [
             models.Index(fields=["miner", "measured_at"], name="idx_raw_spec_miner_measured_at"),
         ]
-
-
-class AbstractReceipt(models.Model):
-    job_uuid = models.UUIDField(db_index=True)
-    miner_hotkey = models.CharField(max_length=256, db_index=True)
-    validator_hotkey = models.CharField(max_length=256, db_index=True)
-
-    class Meta:
-        abstract = True
-        constraints = [
-            UniqueConstraint(fields=["job_uuid"], name="unique_%(class)s_job_uuid"),
-        ]
-
-    def __str__(self):
-        return f"job_uuid: {self.job_uuid}"
-
-
-class JobFinishedReceipt(ExportModelOperationsMixin("job_finished_receipt"), AbstractReceipt):
-    time_started = models.DateTimeField(db_index=True)
-    time_took_us = models.BigIntegerField()
-    score_str = models.CharField(max_length=256)
-
-    def time_took(self):
-        return timedelta(microseconds=self.time_took_us)
-
-    def score(self):
-        return float(self.score_str)
-
-
-class JobStartedReceipt(ExportModelOperationsMixin("job_started_receipt"), AbstractReceipt):
-    executor_class = models.CharField(max_length=255, default=DEFAULT_EXECUTOR_CLASS)
-    time_accepted = models.DateTimeField(db_index=True)
-    max_timeout = models.IntegerField()

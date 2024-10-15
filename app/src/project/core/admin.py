@@ -11,8 +11,6 @@ from .models import (
     Channel,
     Job,
     JobFeedback,
-    JobFinishedReceipt,
-    JobStartedReceipt,
     JobStatus,
     Miner,
     MinerVersion,
@@ -261,34 +259,6 @@ class JobAdmin(admin.ModelAdmin):
     def get_elapsed_display(self, obj: Job) -> str | None:
         if elapsed := obj.elapsed:
             return str(elapsed).split(".")[0]
-
-
-@register(JobFinishedReceipt)
-class JobFinishedReceiptAdmin(admin.ModelAdmin):
-    list_display = (
-        "job_uuid",
-        "miner_hotkey",
-        "validator_hotkey",
-        "time_started",
-        "time_took",
-        "score",
-    )
-    search_fields = ("job_uuid", "miner_hotkey", "validator_hotkey")
-    ordering = ("-time_started",)
-
-
-@register(JobStartedReceipt)
-class JobStartedReceiptAdmin(admin.ModelAdmin):
-    list_display = (
-        "job_uuid",
-        "miner_hotkey",
-        "validator_hotkey",
-        "executor_class",
-        "time_accepted",
-        "max_timeout",
-    )
-    search_fields = ("job_uuid", "miner_hotkey", "validator_hotkey")
-    ordering = ("-time_accepted",)
 
 
 @register(JobFeedback)

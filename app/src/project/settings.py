@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     "project.core",
     "crispy_forms",
     "crispy_bootstrap5",
+    "compute_horde.receipts",
 ]
 
 PROMETHEUS_EXPORT_MIGRATIONS = True

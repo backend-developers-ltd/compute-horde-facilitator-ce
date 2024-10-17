@@ -6,9 +6,10 @@ from typing import NamedTuple
 
 import pytest
 from asgiref.sync import sync_to_async
+from compute_horde.receipts.models import JobFinishedReceipt, JobStartedReceipt
 from constance import config
 
-from ..models import Channel, JobFinishedReceipt, JobStartedReceipt, Validator
+from ..models import Channel, Validator
 from ..schemas import JobFinishedReceiptPayload, JobStartedReceiptPayload
 from ..tasks import fetch_receipts, sync_metagraph
 

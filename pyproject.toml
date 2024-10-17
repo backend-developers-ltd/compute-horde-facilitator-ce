@@ -44,7 +44,7 @@ dependencies = [
     "inflection>=0.5.1",
     "uritemplate>=4.1.1",
     "pyyaml>=6.0.1",
-    "compute-horde>=0.0.8",
+    "compute-horde>=0.0.11",
     "compute-horde-facilitator-sdk @ git+https://github.com/backend-developers-ltd/compute-horde-facilitator-sdk.git@c8865b81396def1929017160e90991c50b1b373f",
     "pdm-backend>=2.3.3",
 ]

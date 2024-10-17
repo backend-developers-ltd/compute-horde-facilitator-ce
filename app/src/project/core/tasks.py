@@ -14,6 +14,7 @@ from asgiref.sync import async_to_sync
 from celery.utils.log import get_task_logger
 from channels.layers import get_channel_layer
 from compute_horde.executor_class import ExecutorClass
+from compute_horde.receipts.models import JobFinishedReceipt, JobStartedReceipt
 from constance import config
 from django.conf import settings
 from django.db import connection
@@ -29,8 +30,6 @@ from .models import (
     Channel,
     GpuCount,
     HardwareState,
-    JobFinishedReceipt,
-    JobStartedReceipt,
     Miner,
     Subnet,
     Validator,
@@ -335,8 +334,10 @@ def fetch_receipts_from_miner(hotkey: str, ip: str, port: int):
     job_started_receipt_to_create = [
         JobStartedReceipt(
             job_uuid=receipt.payload.job_uuid,
-            miner_hotkey=receipt.payload.miner_hotkey,
             validator_hotkey=receipt.payload.validator_hotkey,
+            miner_hotkey=receipt.payload.miner_hotkey,
+            validator_signature=receipt.validator_signature,
+            miner_signature=receipt.miner_signature,
             executor_class=receipt.payload.executor_class,
             time_accepted=receipt.payload.time_accepted,
             max_timeout=receipt.payload.max_timeout,
@@ -352,8 +353,10 @@ def fetch_receipts_from_miner(hotkey: str, ip: str, port: int):
     job_finished_receipt_to_create = [
         JobFinishedReceipt(
             job_uuid=receipt.payload.job_uuid,
-            miner_hotkey=receipt.payload.miner_hotkey,
             validator_hotkey=receipt.payload.validator_hotkey,
+            miner_hotkey=receipt.payload.miner_hotkey,
+            validator_signature=receipt.validator_signature,
+            miner_signature=receipt.miner_signature,
             time_started=receipt.payload.time_started,
             time_took_us=receipt.payload.time_took_us,
             score_str=receipt.payload.score_str,

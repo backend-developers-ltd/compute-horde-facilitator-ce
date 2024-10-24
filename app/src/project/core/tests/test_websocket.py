@@ -4,11 +4,11 @@ from unittest import mock
 import pytest
 from bittensor import Keypair
 from channels.testing import WebsocketCommunicator
+from compute_horde.fv_protocol.validator_requests import V0AuthenticationRequest
 from more_itertools import one
 
 from ...asgi import application
 from ..models import Job, JobStatus, Validator
-from ..schemas import AuthenticationRequest
 
 
 @pytest.mark.asyncio
@@ -180,7 +180,7 @@ async def test__websocket__new_job__evenly_distributed(
 
     # create a second validator
     keypair2 = Keypair.create_from_mnemonic("lion often fade hover duty debris write tumble shock ask bracket roast")
-    auth_request2 = AuthenticationRequest.from_keypair(keypair2)
+    auth_request2 = V0AuthenticationRequest.from_keypair(keypair2)
 
     validator2 = await Validator.objects.acreate(ss58_address=keypair2.ss58_address, is_active=True)
 

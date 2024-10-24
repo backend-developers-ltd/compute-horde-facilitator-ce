@@ -1,8 +1,8 @@
 from uuid import uuid4
 
 import pytest
+from compute_horde.fv_protocol.validator_requests import V0MachineSpecsUpdate
 
-from project.core.schemas import MachineSpecs
 from project.core.specs import process_raw_specs_data, save_machine_specs
 
 from ..models import (
@@ -73,7 +73,7 @@ async def test_machine_specs_udpate():
     await setup_db()
     assert await ParsedSpecsData.objects.acount() == 0
 
-    message = MachineSpecs(
+    message = V0MachineSpecsUpdate(
         specs=dummy_specs, miner_hotkey="miner_hotkey", validator_hotkey="validator_hotkey", batch_id=str(uuid4())
     )
     await save_machine_specs(message)

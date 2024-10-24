@@ -11,6 +11,7 @@ from uuid import uuid4
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from compute_horde.executor_class import DEFAULT_EXECUTOR_CLASS
+from compute_horde.fv_protocol.facilitator_requests import SignedRequest, V0JobRequest, V1JobRequest, V2JobRequest
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
@@ -24,15 +25,11 @@ from structlog.contextvars import bound_contextvars
 from tenacity import retry, retry_if_exception_type, stop_after_delay, wait_fixed
 
 from .schemas import (
-    JobRequest,
     JobStatusMetadata,
     MuliVolumeAllowedVolume,
     MultiUpload,
     MultiVolume,
-    SignedRequest,
     SingleFileUpload,
-    V1JobRequest,
-    V2JobRequest,
     ZipAndHttpPutUpload,
     ZipUrlVolume,
 )
@@ -384,11 +381,11 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
         statuses = self.statuses_ordered
         return statuses[-1].created_at - statuses[0].created_at
 
-    def as_job_request(self) -> JobRequest:
+    def as_job_request(self) -> V0JobRequest:
         if safe_config.JOB_REQUEST_VERSION == 0:
             if self.uploads or self.volumes:
                 raise ValueError("upload and volumes are not supported in version 0 of job protocol")
-            return JobRequest(
+            return V0JobRequest(
                 uuid=str(self.uuid),
                 miner_hotkey=self.miner.ss58_address,
                 executor_class=self.executor_class,

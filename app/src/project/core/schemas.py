@@ -4,7 +4,7 @@ import re
 from collections.abc import Mapping
 from datetime import datetime, timedelta
 from decimal import Decimal
-from typing import TYPE_CHECKING, Annotated, Literal, Self
+from typing import Annotated, Literal
 from urllib.parse import urlparse
 
 import bittensor
@@ -12,16 +12,7 @@ import pydantic
 from compute_horde.executor_class import ExecutorClass
 from pydantic import BaseModel, Extra, Field, field_serializer, field_validator
 
-if TYPE_CHECKING:
-    from bittensor import Keypair
-
 SAFE_DOMAIN_REGEX = re.compile(r".*")
-
-
-class Error(BaseModel, extra=Extra.allow):
-    msg: str
-    type: str
-    help: str = ""
 
 
 class OutputUploadType(str, enum.Enum):
@@ -124,109 +115,6 @@ class MultiVolume(pydantic.BaseModel):
         return all(volume.is_safe() for volume in self.volumes)
 
 
-class SignedRequest(pydantic.BaseModel):
-    signature_type: str
-    signatory: str
-    timestamp_ns: int
-    signature: str
-    signed_payload: Mapping
-
-
-class Response(BaseModel, extra=Extra.forbid):
-    status: Literal["error", "success"]
-    errors: list[Error] = []
-
-
-class AuthenticationRequest(BaseModel, extra=Extra.forbid):
-    """Message sent from validator to this app to authenticate itself"""
-
-    message_type: Literal["V0AuthenticationRequest"] = Field(default="V0AuthenticationRequest")
-    public_key: str
-    signature: str
-
-    @classmethod
-    def from_keypair(cls, keypair: "Keypair") -> Self:
-        return cls(
-            public_key=keypair.public_key.hex(),
-            signature=f"0x{keypair.sign(keypair.public_key).hex()}",
-        )
-
-    def verify_signature(self) -> bool:
-        from bittensor import Keypair
-
-        public_key_bytes = bytes.fromhex(self.public_key)
-        keypair = Keypair(public_key=public_key_bytes, ss58_format=42)
-        return keypair.verify(public_key_bytes, self.signature)
-
-    @property
-    def ss58_address(self) -> str:
-        from bittensor import Keypair
-
-        return Keypair(public_key=bytes.fromhex(self.public_key), ss58_format=42).ss58_address
-
-
-class JobRequest(BaseModel, extra=Extra.forbid):
-    """Message sent from this app to validator to request a job execution"""
-
-    type: Literal["job.new"] = Field(
-        "job.new"
-    )  # this points to a `ValidatorConsumer.job_new` handler (fuck you django-channels!)
-    message_type: Literal["V0JobRequest"] = Field(default="V0JobRequest")
-    uuid: str
-    miner_hotkey: str
-    executor_class: ExecutorClass
-    docker_image: str
-    raw_script: str
-    args: list[str]
-    env: dict[str, str]
-    use_gpu: bool
-    input_url: str
-    output_url: str
-
-
-class V1JobRequest(BaseModel, extra=Extra.forbid):
-    """Message sent from this app to validator to request a job execution"""
-
-    type: Literal["job.new"] = Field(
-        "job.new"
-    )  # this points to a `ValidatorConsumer.job_new` handler (fuck you django-channels!)
-    message_type: Literal["V1JobRequest"] = Field(default="V1JobRequest")
-    uuid: str
-    miner_hotkey: str
-    executor_class: ExecutorClass
-    docker_image: str
-    raw_script: str
-    args: list[str]
-    env: dict[str, str]
-    use_gpu: bool
-    volume: MultiVolume | None = None
-    output_upload: MultiUpload | None = None  # it is enough to support only multi upload
-
-
-class V2JobRequest(BaseModel, extra=Extra.forbid):
-    """Message sent from this app to validator to request a job execution"""
-
-    type: Literal["job.new"] = Field(
-        "job.new"
-    )  # this points to a `ValidatorConsumer.job_new` handler (fuck you django-channels!)
-    message_type: Literal["V2JobRequest"] = Field(default="V2JobRequest")
-    uuid: str
-    miner_hotkey: str | None
-    executor_class: ExecutorClass
-    docker_image: str
-    raw_script: str
-    args: list[str]
-    env: dict[str, str]
-    use_gpu: bool
-    volume: MultiVolume | None = None
-    output_upload: MultiUpload | None = None  # it is enough to support only multi upload
-    signed_request: SignedRequest
-
-
-class Heartbeat(BaseModel, extra=Extra.forbid):
-    message_type: Literal["V0Heartbeat"] = Field(default="V0Heartbeat")
-
-
 class MinerResponse(BaseModel, extra=Extra.allow):
     job_uuid: str
     message_type: str
@@ -248,14 +136,6 @@ class JobStatusUpdate(BaseModel, extra=Extra.forbid):
     uuid: str
     status: Literal["failed", "rejected", "accepted", "completed"]
     metadata: JobStatusMetadata | None = None
-
-
-class MachineSpecs(BaseModel, extra=Extra.forbid):
-    message_type: Literal["V0MachineSpecsUpdate"] = Field(default="V0MachineSpecsUpdate")
-    specs: dict
-    miner_hotkey: str
-    validator_hotkey: str
-    batch_id: str | None = None
 
 
 class ForceDisconnect(BaseModel, extra=Extra.forbid):

@@ -124,6 +124,14 @@ class MultiVolume(pydantic.BaseModel):
         return all(volume.is_safe() for volume in self.volumes)
 
 
+class SignedRequest(pydantic.BaseModel):
+    signature_type: str
+    signatory: str
+    timestamp_ns: int
+    signature: str
+    signed_payload: Mapping
+
+
 class Response(BaseModel, extra=Extra.forbid):
     status: Literal["error", "success"]
     errors: list[Error] = []
@@ -193,6 +201,26 @@ class V1JobRequest(BaseModel, extra=Extra.forbid):
     use_gpu: bool
     volume: MultiVolume | None = None
     output_upload: MultiUpload | None = None  # it is enough to support only multi upload
+
+
+class V2JobRequest(BaseModel, extra=Extra.forbid):
+    """Message sent from this app to validator to request a job execution"""
+
+    type: Literal["job.new"] = Field(
+        "job.new"
+    )  # this points to a `ValidatorConsumer.job_new` handler (fuck you django-channels!)
+    message_type: Literal["V2JobRequest"] = Field(default="V2JobRequest")
+    uuid: str
+    miner_hotkey: str | None
+    executor_class: ExecutorClass
+    docker_image: str
+    raw_script: str
+    args: list[str]
+    env: dict[str, str]
+    use_gpu: bool
+    volume: MultiVolume | None = None
+    output_upload: MultiUpload | None = None  # it is enough to support only multi upload
+    signed_request: SignedRequest
 
 
 class Heartbeat(BaseModel, extra=Extra.forbid):

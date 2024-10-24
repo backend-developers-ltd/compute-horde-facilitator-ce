@@ -57,6 +57,7 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
             "stdout",
             "volumes",
             "uploads",
+            "target_validator_hotkey",
         )
         read_only_fields = (
             "created_at",
@@ -108,7 +109,17 @@ class DockerJobSerializer(DynamicJobFields, JobSerializer):
         fields = JobSerializer.Meta.fields
         read_only_fields = tuple(
             set(JobSerializer.Meta.fields)
-            - {"docker_image", "args", "env", "use_gpu", "input_url", "tag", "volumes", "uploads"}
+            - {
+                "docker_image",
+                "args",
+                "env",
+                "use_gpu",
+                "input_url",
+                "tag",
+                "volumes",
+                "uploads",
+                "target_validator_hotkey",
+            }
         )
 
 
@@ -126,7 +137,7 @@ class BaseCreateJobViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     def perform_create(self, serializer):
         try:
-            serializer.save(user=self.request.user)
+            serializer.save(user=self.request.user, signature_info=self.request.signature_info)
         except ObjectDoesNotExist as exc:
             model_name = exc.__class__.__qualname__.partition(".")[0]
             raise ValidationError(f"Could not select {model_name}")

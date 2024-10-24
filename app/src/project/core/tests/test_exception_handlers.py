@@ -1,5 +1,5 @@
 import pytest
-from compute_horde_facilitator_sdk.v1 import SignatureNotFound, SignatureTimeoutException
+from compute_horde.signature import SignatureNotFound, SignatureTimeoutException
 
 from project.core.exception_handlers import api_exception_handler
 

@@ -1,4 +1,4 @@
-from compute_horde_facilitator_sdk.v1 import SignatureNotFound
+from compute_horde.signature import SignatureNotFound
 from django.utils.deprecation import MiddlewareMixin
 
 from ..services.signatures import signature_info_from_request

@@ -1,7 +1,7 @@
 import base64
 
 import pytest
-from compute_horde_facilitator_sdk.v1 import (
+from compute_horde.signature import (
     VERIFIERS_REGISTRY,
     Signature,
     SignatureInvalidException,

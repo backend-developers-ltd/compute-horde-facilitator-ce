@@ -1,7 +1,6 @@
 import json
 
-from compute_horde_facilitator_sdk._internal.signature import SignatureInvalidException
-from compute_horde_facilitator_sdk.v1 import VERIFIERS_REGISTRY, Signature, signature_from_headers
+from compute_horde.signature import VERIFIERS_REGISTRY, Signature, SignatureInvalidException, signature_from_headers
 from django.http import HttpRequest
 
 from project.core.models import SignatureInfo

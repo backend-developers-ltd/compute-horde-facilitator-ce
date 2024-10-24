@@ -1,4 +1,4 @@
-from compute_horde_facilitator_sdk.v1 import SignatureInvalidException, SignatureNotFound
+from compute_horde.signature import SignatureInvalidException, SignatureNotFound
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler as drf_exception_handler

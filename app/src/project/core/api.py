@@ -1,4 +1,5 @@
 import django_filters
+from compute_horde.base.output_upload import SingleFileUpload
 from django.core.exceptions import ObjectDoesNotExist
 from django_filters import fields
 from django_filters.rest_framework import DjangoFilterBackend
@@ -12,7 +13,7 @@ from structlog import get_logger
 
 from .middleware.signature_middleware import require_signature
 from .models import Job, JobFeedback
-from .schemas import MuliVolumeAllowedVolume, SingleFileUpload
+from .schemas import MuliVolumeAllowedVolume
 from .utils import safe_config
 
 logger = get_logger(__name__)

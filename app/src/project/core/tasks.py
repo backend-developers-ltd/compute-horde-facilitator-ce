@@ -14,6 +14,7 @@ from asgiref.sync import async_to_sync
 from celery.utils.log import get_task_logger
 from channels.layers import get_channel_layer
 from compute_horde.executor_class import ExecutorClass
+from compute_horde.mv_protocol.validator_requests import JobFinishedReceiptPayload, JobStartedReceiptPayload
 from compute_horde.receipts.models import JobFinishedReceipt, JobStartedReceipt
 from constance import config
 from django.conf import settings
@@ -35,7 +36,7 @@ from .models import (
     Validator,
 )
 from .models import MinerVersion as MinerVersionDTO
-from .schemas import ForceDisconnect, HardwareSpec, JobFinishedReceiptPayload, JobStartedReceiptPayload, Receipt
+from .schemas import ForceDisconnect, HardwareSpec, Receipt
 from .specs import normalize_gpu_name
 from .utils import fetch_compute_subnet_hardware, is_validator
 

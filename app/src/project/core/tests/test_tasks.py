@@ -6,11 +6,11 @@ from typing import NamedTuple
 
 import pytest
 from asgiref.sync import sync_to_async
+from compute_horde.mv_protocol.validator_requests import JobFinishedReceiptPayload, JobStartedReceiptPayload
 from compute_horde.receipts.models import JobFinishedReceipt, JobStartedReceipt
 from constance import config
 
 from ..models import Channel, Validator
-from ..schemas import JobFinishedReceiptPayload, JobStartedReceiptPayload
 from ..tasks import fetch_receipts, sync_metagraph
 
 RAW_RECEIPT_PAYLOAD_1 = """{"payload":{"job_uuid":"4baa27a0-24c4-4c9e-b97e-3c333c9434d9","miner_hotkey":"5G1m7GHoMW5GSdPv6pSpz4xi8CTXiLuCpZWEGZVaRdsB7zGZ","validator_hotkey":"5H9BnRTvaSLDzwVSHHFxLL9zU15CAf4L94fXkuvZiUTBQJ4Q","executor_class":"spin_up-4min.gpu-24gb","time_accepted":"2024-10-24T19:17:26.389147+00:00","max_timeout":30,"is_organic":true},"validator_signature":"0xec3123d150361fc754b5b80dff3dd96b6f3dee1aa5222e66db7bd4d226c76a5220ccc8a068eba5ff90536adb1aa03795e0c9e8b53b2b66b71d4d946e7802928d","miner_signature":"0x42a646bf5c09dda0dec035c699dc9415cb1aac9c3fcf2faca25e90d7a3d7aa615b26c85d31723d54b46a5bdb629b8e56296c21193d793720f50f9ec0f71bd38e"}"""

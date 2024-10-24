@@ -10,6 +10,15 @@ from uuid import uuid4
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from compute_horde.base.output_upload import (
+    MultiUpload,
+    SingleFileUpload,
+    ZipAndHttpPutUpload,
+)
+from compute_horde.base.volume import (
+    MultiVolume,
+    ZipUrlVolume,
+)
 from compute_horde.executor_class import DEFAULT_EXECUTOR_CLASS
 from compute_horde.fv_protocol.facilitator_requests import SignedRequest, V0JobRequest, V1JobRequest, V2JobRequest
 from django.conf import settings
@@ -27,11 +36,6 @@ from tenacity import retry, retry_if_exception_type, stop_after_delay, wait_fixe
 from .schemas import (
     JobStatusMetadata,
     MuliVolumeAllowedVolume,
-    MultiUpload,
-    MultiVolume,
-    SingleFileUpload,
-    ZipAndHttpPutUpload,
-    ZipUrlVolume,
 )
 from .utils import create_signed_download_url, create_signed_upload_url, safe_config
 

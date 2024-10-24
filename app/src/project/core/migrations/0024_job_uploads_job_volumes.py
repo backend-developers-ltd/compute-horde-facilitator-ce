@@ -2,12 +2,12 @@
 
 import typing
 
+import compute_horde.base.output_upload
+import compute_horde.base.volume
 import django.core.serializers.json
 import django_pydantic_field.compat.django
 import django_pydantic_field.fields
 from django.db import migrations
-
-import project.core.schemas
 
 
 class Migration(migrations.Migration):
@@ -30,7 +30,8 @@ class Migration(migrations.Migration):
                         django_pydantic_field.compat.django.GenericContainer(
                             typing.Annotated,
                             (
-                                project.core.schemas.SingleFilePostUpload | project.core.schemas.SingleFilePutUpload,
+                                compute_horde.base.output_upload.SingleFilePostUpload
+                                | compute_horde.base.output_upload.SingleFilePutUpload,
                                 django_pydantic_field.compat.django.FieldInfoContainer(
                                     None, (), {"discriminator": "output_upload_type"}
                                 ),
@@ -54,7 +55,7 @@ class Migration(migrations.Migration):
                         django_pydantic_field.compat.django.GenericContainer(
                             typing.Annotated,
                             (
-                                project.core.schemas.ZipUrlVolume | project.core.schemas.SingleFileVolume,
+                                compute_horde.base.volume.ZipUrlVolume | compute_horde.base.volume.SingleFileVolume,
                                 django_pydantic_field.compat.django.FieldInfoContainer(
                                     None, (), {"discriminator": "volume_type"}
                                 ),

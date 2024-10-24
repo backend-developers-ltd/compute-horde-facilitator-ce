@@ -288,6 +288,7 @@ def fetch_receipts_from_miner(hotkey: str, ip: str, port: int):
                             executor_class=ExecutorClass(raw_receipt["executor_class"]),
                             time_accepted=time_accepted,
                             max_timeout=int(raw_receipt["max_timeout"]),
+                            is_organic=raw_receipt["is_organic"] == "True",
                         )
 
                     case "JobFinishedReceipt":
@@ -341,6 +342,7 @@ def fetch_receipts_from_miner(hotkey: str, ip: str, port: int):
             executor_class=receipt.payload.executor_class,
             time_accepted=receipt.payload.time_accepted,
             max_timeout=receipt.payload.max_timeout,
+            is_organic=receipt.payload.is_organic,
         )
         for receipt in receipts
         if isinstance(receipt.payload, JobStartedReceiptPayload)

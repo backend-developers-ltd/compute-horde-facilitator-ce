@@ -7,9 +7,11 @@
 /redis/
 /db/
 .env
-.venv
-venv
+.venv/
+venv/
 media/
+.mypy_cache/
+.ruff_cache/
 .backups/
 .envrc
 .terraform.lock.hcl

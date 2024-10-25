@@ -3,13 +3,16 @@ from typing import Annotated, Literal
 
 import bittensor
 from compute_horde.base.volume import (
+    HuggingfaceVolume,
     SingleFileVolume,
     ZipUrlVolume,
 )
 from compute_horde.mv_protocol.validator_requests import JobFinishedReceiptPayload, JobStartedReceiptPayload
 from pydantic import BaseModel, Extra, Field, field_validator
 
-MuliVolumeAllowedVolume = Annotated[ZipUrlVolume | SingleFileVolume, Field(discriminator="volume_type")]
+MuliVolumeAllowedVolume = Annotated[
+    ZipUrlVolume | SingleFileVolume | HuggingfaceVolume, Field(discriminator="volume_type")
+]
 
 
 class MinerResponse(BaseModel, extra=Extra.allow):

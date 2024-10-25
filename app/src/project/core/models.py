@@ -16,11 +16,18 @@ from compute_horde.base.output_upload import (
     ZipAndHttpPutUpload,
 )
 from compute_horde.base.volume import (
+    HuggingfaceVolume,
     MultiVolume,
     ZipUrlVolume,
 )
 from compute_horde.executor_class import DEFAULT_EXECUTOR_CLASS
-from compute_horde.fv_protocol.facilitator_requests import SignedRequest, V0JobRequest, V1JobRequest, V2JobRequest
+from compute_horde.fv_protocol.facilitator_requests import (
+    JobRequest,
+    SignedRequest,
+    V0JobRequest,
+    V1JobRequest,
+    V2JobRequest,
+)
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
@@ -193,6 +200,13 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
     env = models.JSONField(blank=True, default=dict, help_text="environment variables for the job")
     use_gpu = models.BooleanField(default=False, help_text="Whether to use GPU for the job")
     input_url = models.URLField(blank=True, help_text="URL to the input data source", max_length=1000)
+    hf_repo_id = models.CharField(max_length=255, blank=True, default="", help_text="Huggingface model repo id")
+    hf_revision = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        help_text="Huggingface model revision id: branch name / tag / commit hash",
+    )
     output_upload_url = models.TextField(blank=True, help_text="URL for uploading output")
     output_download_url = models.TextField(blank=True, help_text="URL for retrieving output")
     output_download_url_expires_at = models.DateTimeField(blank=True)
@@ -385,7 +399,7 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
         statuses = self.statuses_ordered
         return statuses[-1].created_at - statuses[0].created_at
 
-    def as_job_request(self) -> V0JobRequest:
+    def as_job_request(self) -> JobRequest:
         if safe_config.JOB_REQUEST_VERSION == 0:
             if self.uploads or self.volumes:
                 raise ValueError("upload and volumes are not supported in version 0 of job protocol")
@@ -402,12 +416,20 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
                 output_url=self.output_upload_url,
             )
         else:
-            if self.input_url or self.volumes:
+            if self.input_url or self.volumes or self.hf_repo_id:
                 subvolumes = []
                 if self.input_url:
                     subvolumes.append(
                         ZipUrlVolume(
                             contents=self.input_url,
+                            relative_path="",
+                        )
+                    )
+                if self.repo_id:
+                    subvolumes.append(
+                        HuggingfaceVolume(
+                            repo_id=self.hf_repo_id,
+                            revision=self.hf_revision,
                             relative_path="",
                         )
                     )

@@ -56,6 +56,8 @@ class DockerImageJobCreateView(CreateView):
                     "env": job.env,
                     "use_gpu": job.use_gpu,
                     "input_url": job.input_url,
+                    "hf_repo_id": job.hf_repo_id,
+                    "hf_revision": job.hf_revision,
                 }
             )
         return form_kwargs
@@ -100,6 +102,8 @@ class RawScriptJobCreateView(CreateView):
                 {
                     "raw_script": job.raw_script,
                     "input_url": job.input_url,
+                    "hf_repo_id": job.hf_repo_id,
+                    "hf_revision": job.hf_revision,
                 }
             )
         return form_kwargs

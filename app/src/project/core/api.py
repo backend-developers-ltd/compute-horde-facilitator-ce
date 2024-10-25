@@ -52,6 +52,8 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
             "args",
             "env",
             "use_gpu",
+            "hf_repo_id",
+            "hf_revision",
             "input_url",
             "output_download_url",
             "tag",
@@ -100,7 +102,8 @@ class RawJobSerializer(DynamicJobFields, JobSerializer):
         model = Job
         fields = JobSerializer.Meta.fields
         read_only_fields = tuple(
-            set(JobSerializer.Meta.fields) - {"raw_script", "input_url", "tag", "volumes", "uploads"}
+            set(JobSerializer.Meta.fields)
+            - {"raw_script", "input_url", "hf_repo_id", "hf_revision", "tag", "volumes", "uploads"}
         )
 
 
@@ -116,6 +119,8 @@ class DockerJobSerializer(DynamicJobFields, JobSerializer):
                 "env",
                 "use_gpu",
                 "input_url",
+                "hf_repo_id",
+                "hf_revision",
                 "tag",
                 "volumes",
                 "uploads",

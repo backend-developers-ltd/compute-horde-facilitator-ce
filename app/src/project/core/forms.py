@@ -14,6 +14,8 @@ class DockerImageJobForm(forms.ModelForm):
             "env",
             "use_gpu",
             "input_url",
+            "hf_repo_id",
+            "hf_revision",
         )
         widgets = {
             "args": forms.Textarea(attrs={"rows": 2}),
@@ -33,6 +35,8 @@ class RawScriptJobForm(forms.ModelForm):
         fields = (
             "raw_script",
             "input_url",
+            "hf_repo_id",
+            "hf_revision",
         )
 
     def __init__(self, *args, **kwargs):

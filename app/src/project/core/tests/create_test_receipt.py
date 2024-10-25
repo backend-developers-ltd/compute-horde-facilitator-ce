@@ -23,6 +23,7 @@ started_payload = JobStartedReceiptPayload(
     executor_class=DEFAULT_EXECUTOR_CLASS,
     time_accepted=datetime.now(tz=UTC),
     max_timeout=30,
+    is_organic=True,
 )
 
 started_payload_blob = started_payload.blob_for_signing()

@@ -1,3 +1,4 @@
+import base64
 import shlex
 from collections.abc import Callable
 from contextlib import suppress
@@ -9,7 +10,17 @@ from uuid import uuid4
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from compute_horde.base.output_upload import (
+    MultiUpload,
+    SingleFileUpload,
+    ZipAndHttpPutUpload,
+)
+from compute_horde.base.volume import (
+    MultiVolume,
+    ZipUrlVolume,
+)
 from compute_horde.executor_class import DEFAULT_EXECUTOR_CLASS
+from compute_horde.fv_protocol.facilitator_requests import SignedRequest, V0JobRequest, V1JobRequest, V2JobRequest
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
@@ -23,15 +34,8 @@ from structlog.contextvars import bound_contextvars
 from tenacity import retry, retry_if_exception_type, stop_after_delay, wait_fixed
 
 from .schemas import (
-    JobRequest,
     JobStatusMetadata,
     MuliVolumeAllowedVolume,
-    MultiUpload,
-    MultiVolume,
-    SingleFileUpload,
-    V1JobRequest,
-    ZipAndHttpPutUpload,
-    ZipUrlVolume,
 )
 from .utils import create_signed_download_url, create_signed_upload_url, safe_config
 
@@ -174,7 +178,10 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
     uuid = models.UUIDField(primary_key=True, editable=False, blank=True)
     user = models.ForeignKey("auth.User", on_delete=models.PROTECT, related_name="jobs")
     validator = models.ForeignKey(Validator, blank=True, on_delete=models.PROTECT, related_name="jobs")
-    miner = models.ForeignKey(Miner, blank=True, on_delete=models.PROTECT, related_name="jobs")
+    miner = models.ForeignKey(Miner, blank=True, null=True, on_delete=models.PROTECT, related_name="jobs")
+    signature_info = models.ForeignKey(
+        SignatureInfo, blank=True, default=None, null=True, on_delete=models.PROTECT, related_name="jobs"
+    )
     created_at = models.DateTimeField(default=now)
 
     executor_class = models.CharField(
@@ -189,6 +196,7 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
     output_upload_url = models.TextField(blank=True, help_text="URL for uploading output")
     output_download_url = models.TextField(blank=True, help_text="URL for retrieving output")
     output_download_url_expires_at = models.DateTimeField(blank=True)
+    target_validator_hotkey = models.TextField(blank=True, default=None, null=True, help_text="target validator")
     volumes = SchemaField(schema=list[MuliVolumeAllowedVolume], blank=True, default=list)
     uploads = SchemaField(schema=list[SingleFileUpload], blank=True, default=list)
 
@@ -224,7 +232,10 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
         # active validators during selection process
         with transaction.atomic(), bound_contextvars(job=self):
             self.validator = getattr(self, "validator", None) or self.select_validator()
-            self.miner = getattr(self, "miner", None) or self.select_miner()
+            if self.target_validator_hotkey is None:
+                self.miner = getattr(self, "miner", None) or self.select_miner()
+            else:
+                self.miner = None
             super().save(*args, **kwargs)
             if is_new:
                 self.send_to_validator()
@@ -244,6 +255,15 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
             )
         )
         log.debug("connected validators", validator_ids=validator_ids)
+
+        if self.target_validator_hotkey is not None:
+            if self.signature_info is None:
+                raise ValueError("Request must be signed when target_validator_hotkey is set")
+            validator = Validator.objects.filter(ss58_address=self.target_validator_hotkey).first()
+            if validator and validator.id in validator_ids:
+                log.debug("selected (targeted) validator", validator=validator)
+                return validator
+            raise Validator.DoesNotExist
 
         # use user's preferences to select specific validators
         with suppress(UserPreferences.DoesNotExist):
@@ -365,11 +385,11 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
         statuses = self.statuses_ordered
         return statuses[-1].created_at - statuses[0].created_at
 
-    def as_job_request(self) -> JobRequest:
+    def as_job_request(self) -> V0JobRequest:
         if safe_config.JOB_REQUEST_VERSION == 0:
             if self.uploads or self.volumes:
                 raise ValueError("upload and volumes are not supported in version 0 of job protocol")
-            return JobRequest(
+            return V0JobRequest(
                 uuid=str(self.uuid),
                 miner_hotkey=self.miner.ss58_address,
                 executor_class=self.executor_class,
@@ -402,18 +422,41 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
                 )
             else:
                 output_upload = None
-            return V1JobRequest(
-                uuid=str(self.uuid),
-                miner_hotkey=self.miner.ss58_address,
-                executor_class=self.executor_class,
-                docker_image=self.docker_image,
-                raw_script=self.raw_script,
-                args=shlex.split(self.args),
-                env=self.env,
-                use_gpu=self.use_gpu,
-                volume=volume,
-                output_upload=output_upload,
-            )
+            if self.signature_info is not None:
+                signed_request = SignedRequest(
+                    signature_type=self.signature_info.signature_type,
+                    signatory=self.signature_info.signatory,
+                    timestamp_ns=self.signature_info.timestamp_ns,
+                    signature=base64.b64encode(self.signature_info.signature),
+                    signed_payload=self.signature_info.signed_payload["json"],
+                )
+                return V2JobRequest(
+                    uuid=str(self.uuid),
+                    miner_hotkey=self.miner.ss58_address if self.miner is not None else None,
+                    executor_class=self.executor_class,
+                    docker_image=self.docker_image,
+                    raw_script=self.raw_script,
+                    args=shlex.split(self.args),
+                    env=self.env,
+                    use_gpu=self.use_gpu,
+                    volume=volume,
+                    output_upload=output_upload,
+                    signed_request=signed_request,
+                )
+            else:
+                assert self.miner is not None
+                return V1JobRequest(
+                    uuid=str(self.uuid),
+                    miner_hotkey=self.miner.ss58_address,
+                    executor_class=self.executor_class,
+                    docker_image=self.docker_image,
+                    raw_script=self.raw_script,
+                    args=shlex.split(self.args),
+                    env=self.env,
+                    use_gpu=self.use_gpu,
+                    volume=volume,
+                    output_upload=output_upload,
+                )
 
     def send_to_validator(self) -> None:
         channels_names = Channel.objects.filter(validator=self.validator).values_list("name", flat=True)

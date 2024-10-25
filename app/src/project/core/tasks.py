@@ -14,6 +14,7 @@ from asgiref.sync import async_to_sync
 from celery.utils.log import get_task_logger
 from channels.layers import get_channel_layer
 from compute_horde.executor_class import ExecutorClass
+from compute_horde.mv_protocol.validator_requests import JobFinishedReceiptPayload, JobStartedReceiptPayload
 from compute_horde.receipts.models import JobFinishedReceipt, JobStartedReceipt
 from constance import config
 from django.conf import settings
@@ -35,7 +36,7 @@ from .models import (
     Validator,
 )
 from .models import MinerVersion as MinerVersionDTO
-from .schemas import ForceDisconnect, HardwareSpec, JobFinishedReceiptPayload, JobStartedReceiptPayload, Receipt
+from .schemas import ForceDisconnect, HardwareSpec, Receipt
 from .specs import normalize_gpu_name
 from .utils import fetch_compute_subnet_hardware, is_validator
 
@@ -288,6 +289,7 @@ def fetch_receipts_from_miner(hotkey: str, ip: str, port: int):
                             executor_class=ExecutorClass(raw_receipt["executor_class"]),
                             time_accepted=time_accepted,
                             max_timeout=int(raw_receipt["max_timeout"]),
+                            is_organic=raw_receipt["is_organic"] == "True",
                         )
 
                     case "JobFinishedReceipt":
@@ -341,6 +343,7 @@ def fetch_receipts_from_miner(hotkey: str, ip: str, port: int):
             executor_class=receipt.payload.executor_class,
             time_accepted=receipt.payload.time_accepted,
             max_timeout=receipt.payload.max_timeout,
+            is_organic=receipt.payload.is_organic,
         )
         for receipt in receipts
         if isinstance(receipt.payload, JobStartedReceiptPayload)

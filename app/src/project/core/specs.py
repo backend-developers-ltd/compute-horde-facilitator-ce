@@ -2,6 +2,7 @@ from collections import defaultdict
 
 import structlog
 from celery.utils.log import get_task_logger
+from compute_horde.fv_protocol.validator_requests import V0MachineSpecsUpdate
 from django.utils.timezone import now
 from pydantic import parse_obj_as
 
@@ -16,7 +17,7 @@ from .models import (
     RawSpecsData,
     Validator,
 )
-from .schemas import HardwareSpec, MachineSpecs
+from .schemas import HardwareSpec
 
 log = structlog.wrap_logger(get_task_logger(__name__))
 
@@ -46,7 +47,7 @@ def cleanup_fields(raw_specs):
         log.error("could not remove variable ram and hard disk fields from: {raw_specs}")
 
 
-async def save_machine_specs(message: MachineSpecs) -> None:
+async def save_machine_specs(message: V0MachineSpecsUpdate) -> None:
     message = message.dict()
     raw_specs = message["specs"]
     validator_hotkey = message["validator_hotkey"]

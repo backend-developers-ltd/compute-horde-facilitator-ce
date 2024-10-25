@@ -6,6 +6,8 @@ from typing import Annotated, ClassVar, Union
 
 import structlog
 from channels.generic.websocket import AsyncWebsocketConsumer
+from compute_horde.fv_protocol.facilitator_requests import Error, Response
+from compute_horde.fv_protocol.validator_requests import V0AuthenticationRequest, V0Heartbeat, V0MachineSpecsUpdate
 from django.conf import settings
 from django.db import IntegrityError
 from django.utils.timezone import now
@@ -13,14 +15,7 @@ from pydantic import BaseModel, Field, TypeAdapter, ValidationError
 from structlog.contextvars import bound_contextvars
 
 from .models import Channel, Job, JobStatus, Validator
-from .schemas import (
-    AuthenticationRequest,
-    Error,
-    Heartbeat,
-    JobStatusUpdate,
-    MachineSpecs,
-    Response,
-)
+from .schemas import JobStatusUpdate
 from .specs import save_machine_specs
 
 log = structlog.get_logger(__name__)
@@ -119,7 +114,7 @@ class ValidatorConsumer(AsyncWebsocketConsumer):
             log.debug("selected message handler", handler=handler)
             await handler(self, message)
 
-    async def authenticate(self, message: AuthenticationRequest) -> None:
+    async def authenticate(self, message: V0AuthenticationRequest) -> None:
         """Check some authentication details and store ss58 address in the scope"""
 
         with bound_contextvars(message=message):
@@ -218,18 +213,18 @@ class ValidatorConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=Response(status="success").json())
 
     @require_authentication
-    async def machine_specs_update(self, message: MachineSpecs) -> None:
+    async def machine_specs_update(self, message: V0MachineSpecsUpdate) -> None:
         """Handle machine specs update message sent from validator to this app"""
 
         with bound_contextvars(message=message):
             await save_machine_specs(message)
 
     @require_authentication
-    async def heartbeat(self, message: Heartbeat) -> None:
+    async def heartbeat(self, message: V0Heartbeat) -> None:
         await Channel.objects.filter(name=self.channel_name).aupdate(last_heartbeat=now())
 
     async def job_new(self, payload: dict) -> None:
-        """Receive JobRequest from backend and forward it to validator via WS"""
+        """Receive V0JobRequest from backend and forward it to validator via WS"""
 
         log.debug("forwarding new job request to validator", payload=payload)
         await self.send(text_data=json.dumps(payload))
@@ -244,8 +239,8 @@ class ValidatorConsumer(AsyncWebsocketConsumer):
         await self.disconnect(code=CloseCode.NOT_FOUND.value)
 
     MESSAGE_HANDLERS: ClassVar[dict[BaseModel, Callable]] = {
-        AuthenticationRequest: authenticate,
+        V0AuthenticationRequest: authenticate,
         JobStatusUpdate: job_status_update,
-        MachineSpecs: machine_specs_update,
-        Heartbeat: heartbeat,
+        V0MachineSpecsUpdate: machine_specs_update,
+        V0Heartbeat: heartbeat,
     }

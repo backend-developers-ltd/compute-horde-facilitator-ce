@@ -6,14 +6,14 @@ from typing import NamedTuple
 
 import pytest
 from asgiref.sync import sync_to_async
+from compute_horde.mv_protocol.validator_requests import JobFinishedReceiptPayload, JobStartedReceiptPayload
 from compute_horde.receipts.models import JobFinishedReceipt, JobStartedReceipt
 from constance import config
 
 from ..models import Channel, Validator
-from ..schemas import JobFinishedReceiptPayload, JobStartedReceiptPayload
 from ..tasks import fetch_receipts, sync_metagraph
 
-RAW_RECEIPT_PAYLOAD_1 = """{"payload":{"job_uuid":"fcc0f984-766f-4c10-a535-f6a7919af10a","miner_hotkey":"5G1m7GHoMW5GSdPv6pSpz4xi8CTXiLuCpZWEGZVaRdsB7zGZ","validator_hotkey":"5H9BnRTvaSLDzwVSHHFxLL9zU15CAf4L94fXkuvZiUTBQJ4Q","executor_class":"spin_up-4min.gpu-24gb","time_accepted":"2024-07-09T19:17:22.865041+00:00","max_timeout":30},"validator_signature":"0xc2d8695ebd8b862e0d968c57ef7b69d50e5169e77e629c6c15a7365d51b929044353bf492d5e2769c48556b09034da5df13c84741c9bfef628cddf9326104188","miner_signature":"0x1ae85bca0a9314349cd36003b552a9fbd4ba5a8edc1abae1e9789c36eaf081046d085b9ea62c924332bdfd7adf2757540e3bc586ceb3447223cd1b2f067dba89"}"""
+RAW_RECEIPT_PAYLOAD_1 = """{"payload":{"job_uuid":"4baa27a0-24c4-4c9e-b97e-3c333c9434d9","miner_hotkey":"5G1m7GHoMW5GSdPv6pSpz4xi8CTXiLuCpZWEGZVaRdsB7zGZ","validator_hotkey":"5H9BnRTvaSLDzwVSHHFxLL9zU15CAf4L94fXkuvZiUTBQJ4Q","executor_class":"spin_up-4min.gpu-24gb","time_accepted":"2024-10-24T19:17:26.389147+00:00","max_timeout":30,"is_organic":true},"validator_signature":"0xec3123d150361fc754b5b80dff3dd96b6f3dee1aa5222e66db7bd4d226c76a5220ccc8a068eba5ff90536adb1aa03795e0c9e8b53b2b66b71d4d946e7802928d","miner_signature":"0x42a646bf5c09dda0dec035c699dc9415cb1aac9c3fcf2faca25e90d7a3d7aa615b26c85d31723d54b46a5bdb629b8e56296c21193d793720f50f9ec0f71bd38e"}"""
 RAW_RECEIPT_PAYLOAD_2 = """{"payload":{"job_uuid":"f6939ad1-d46d-4b4d-b022-2aac6b72428f","miner_hotkey":"5G1m7GHoMW5GSdPv6pSpz4xi8CTXiLuCpZWEGZVaRdsB7zGZ","validator_hotkey":"5H9BnRTvaSLDzwVSHHFxLL9zU15CAf4L94fXkuvZiUTBQJ4Q","time_started":"2024-07-09T19:17:22.865280+00:00","time_took_us":30000000,"score_str":"0.1234"},"validator_signature":"0x7cf4ad9d3f6f94403a6267a31bbe02f4c5f36ec7493381de40b96a166e897b3b8ab0c2bcbec9432d56087eb1478d66f161f5bc4d283948c23c259074130e5e89","miner_signature":"0x4423a415eb2538f54d71fb9389fe8a845ea5cb5a7d41bbbbb9aa7cb537ed544fde3c4247e914446052a5a51142805c0ce562777d3aaf3751a55ee6e6a2fcb387"}"""
 
 MINER_HOTKEY = "5G1m7GHoMW5GSdPv6pSpz4xi8CTXiLuCpZWEGZVaRdsB7zGZ"
@@ -303,6 +303,7 @@ def test__fetch_receipts__happy_path(monkeypatch, mocked_responses):
     assert instance.executor_class == receipt_payload["payload"]["executor_class"]
     assert instance.time_accepted == datetime.fromisoformat(receipt_payload["payload"]["time_accepted"])
     assert instance.max_timeout == receipt_payload["payload"]["max_timeout"]
+    assert instance.is_organic == receipt_payload["payload"]["is_organic"]
 
     receipt_payload = json.loads(RAW_RECEIPT_PAYLOAD_2)
     instance = JobFinishedReceipt.objects.get(job_uuid=receipt_payload["payload"]["job_uuid"])

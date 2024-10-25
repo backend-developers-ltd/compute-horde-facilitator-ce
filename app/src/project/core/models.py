@@ -23,7 +23,7 @@ from compute_horde.base.volume import (
 from compute_horde.executor_class import DEFAULT_EXECUTOR_CLASS
 from compute_horde.fv_protocol.facilitator_requests import (
     JobRequest,
-    SignedRequest,
+    Signature,
     V0JobRequest,
     V1JobRequest,
     V2JobRequest,
@@ -425,7 +425,7 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
                             relative_path="",
                         )
                     )
-                if self.repo_id:
+                if self.hf_repo_id:
                     subvolumes.append(
                         HuggingfaceVolume(
                             repo_id=self.hf_repo_id,
@@ -445,16 +445,15 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
             else:
                 output_upload = None
             if self.signature_info is not None:
-                signed_request = SignedRequest(
+                assert self.miner is None
+                signature = Signature(
                     signature_type=self.signature_info.signature_type,
                     signatory=self.signature_info.signatory,
                     timestamp_ns=self.signature_info.timestamp_ns,
-                    signature=base64.b64encode(self.signature_info.signature),
-                    signed_payload=self.signature_info.signed_payload["json"],
+                    signature=base64.b64encode(self.signature_info.signature).decode("utf8"),
                 )
                 return V2JobRequest(
                     uuid=str(self.uuid),
-                    miner_hotkey=self.miner.ss58_address if self.miner is not None else None,
                     executor_class=self.executor_class,
                     docker_image=self.docker_image,
                     raw_script=self.raw_script,
@@ -463,7 +462,7 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
                     use_gpu=self.use_gpu,
                     volume=volume,
                     output_upload=output_upload,
-                    signed_request=signed_request,
+                    signature=signature,
                 )
             else:
                 assert self.miner is not None

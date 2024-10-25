@@ -425,7 +425,7 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
                             relative_path="",
                         )
                     )
-                if self.repo_id:
+                if self.hf_repo_id:
                     subvolumes.append(
                         HuggingfaceVolume(
                             repo_id=self.hf_repo_id,

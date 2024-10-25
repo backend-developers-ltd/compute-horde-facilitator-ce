@@ -1,5 +1,6 @@
 import django_filters
 from compute_horde.base.output_upload import SingleFileUpload
+from constance import config
 from django.core.exceptions import ObjectDoesNotExist
 from django_filters import fields
 from django_filters.rest_framework import DjangoFilterBackend
@@ -142,6 +143,9 @@ class BaseCreateJobViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Job.objects.with_statuses()
 
     def perform_create(self, serializer):
+        if not config.ENABLE_ORGANIC_JOBS:
+            raise ValidationError("Job creation is disabled at this moment")
+
         try:
             serializer.save(user=self.request.user, signature_info=self.request.signature_info)
         except ObjectDoesNotExist as exc:

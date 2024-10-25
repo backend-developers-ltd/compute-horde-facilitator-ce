@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import QuerySet
 from django.forms.models import ModelForm
+from django.http import HttpRequest
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
@@ -35,10 +36,40 @@ class JobListView(ListView):
         return self.request.user.jobs.with_statuses().order_by("-created_at")
 
 
-@method_decorator(login_required, name="dispatch")
 @method_decorator(fingerprint, name="get")
-class DockerImageJobCreateView(CreateView):
+class JobCreateView(CreateView):
     model = Job
+
+    @method_decorator(login_required)
+    def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        if not config.ENABLE_ORGANIC_JOBS:
+            return render(request, "core/job_create_disabled.html")
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form: ModelForm) -> HttpResponse:
+        try:
+            job = form.save(commit=False)
+            job.user = self.request.user
+            job.save()
+        except Validator.DoesNotExist:
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                "No validators available, please try again later",
+            )
+            return super().get(self.request)
+        except Miner.DoesNotExist:
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                "No miners available, please try again later",
+            )
+            return super().get(self.request)
+
+        return HttpResponseRedirect(job.get_absolute_url())
+
+
+class DockerImageJobCreateView(JobCreateView):
     form_class = DockerImageJobForm
     template_name = "core/job_create_docker_image.html"
 
@@ -62,33 +93,8 @@ class DockerImageJobCreateView(CreateView):
             )
         return form_kwargs
 
-    def form_valid(self, form: ModelForm) -> HttpResponse:
-        try:
-            job = form.save(commit=False)
-            job.user = self.request.user
-            job.save()
-        except Validator.DoesNotExist:
-            messages.add_message(
-                self.request,
-                messages.ERROR,
-                "No validators available, please try again later",
-            )
-            return super().get(self.request)
-        except Miner.DoesNotExist:
-            messages.add_message(
-                self.request,
-                messages.ERROR,
-                "No miners available, please try again later",
-            )
-            return super().get(self.request)
 
-        return HttpResponseRedirect(job.get_absolute_url())
-
-
-@method_decorator(login_required, name="dispatch")
-@method_decorator(fingerprint, name="get")
-class RawScriptJobCreateView(CreateView):
-    model = Job
+class RawScriptJobCreateView(JobCreateView):
     form_class = RawScriptJobForm
     template_name = "core/job_create_raw_script.html"
 
@@ -107,28 +113,6 @@ class RawScriptJobCreateView(CreateView):
                 }
             )
         return form_kwargs
-
-    def form_valid(self, form: ModelForm) -> HttpResponse:
-        try:
-            job = form.save(commit=False)
-            job.user = self.request.user
-            job.save()
-        except Validator.DoesNotExist:
-            messages.add_message(
-                self.request,
-                messages.ERROR,
-                "No validators available, please try again later",
-            )
-            return super().get(self.request)
-        except Miner.DoesNotExist:
-            messages.add_message(
-                self.request,
-                messages.ERROR,
-                "No miners available, please try again later",
-            )
-            return super().get(self.request)
-
-        return HttpResponseRedirect(job.get_absolute_url())
 
 
 @method_decorator(fingerprint, name="get")

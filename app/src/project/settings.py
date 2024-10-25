@@ -151,6 +151,7 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
 CONSTANCE_CONFIG = {
     "ENABLE_PUBLIC_REGISTRATION": (False, "Whether to allow anyone to register as a user", bool),
+    "ENABLE_ORGANIC_JOBS": (True, "Whether to allow users to post organic jobss", bool),
     "VALIDATORS_LIMIT": (12, "Maximum number of active validators", int),
     "OUR_VALIDATOR_SS58_ADDRESS": ("", "Our validator's SS58 address", str),
     "JOB_REQUEST_VERSION": (0, "Version used of job request protocol (allows smooth migration)", int),

@@ -14,8 +14,14 @@ from asgiref.sync import async_to_sync
 from celery.utils.log import get_task_logger
 from channels.layers import get_channel_layer
 from compute_horde.executor_class import ExecutorClass
-from compute_horde.mv_protocol.validator_requests import JobFinishedReceiptPayload, JobStartedReceiptPayload
-from compute_horde.receipts.models import JobFinishedReceipt, JobStartedReceipt
+from compute_horde.receipts.models import JobAcceptedReceipt, JobFinishedReceipt, JobStartedReceipt
+from compute_horde.receipts.schemas import (
+    JobAcceptedReceiptPayload,
+    JobFinishedReceiptPayload,
+    JobStartedReceiptPayload,
+    Receipt,
+    ReceiptType,
+)
 from constance import config
 from django.conf import settings
 from django.db import connection
@@ -36,7 +42,7 @@ from .models import (
     Validator,
 )
 from .models import MinerVersion as MinerVersionDTO
-from .schemas import ForceDisconnect, HardwareSpec, Receipt
+from .schemas import ForceDisconnect, HardwareSpec
 from .specs import normalize_gpu_name
 from .utils import fetch_compute_subnet_hardware, is_validator
 
@@ -234,6 +240,7 @@ def fetch_miner_versions() -> None:
 def fetch_receipts_from_miner(hotkey: str, ip: str, port: int):
     # Origin of this task may be found in ComputeHorde repo:
     # https://github.com/backend-developers-ltd/ComputeHorde/blob/8b35d24142265171e863e98b3c517ffee007d9a0/compute_horde/compute_horde/receipts.py#L34
+    # TODO: reuse receipt fetching code from compute_horde library instead of reimplementing here
 
     receipts = []
     with contextlib.ExitStack() as exit_stack:
@@ -249,64 +256,67 @@ def fetch_receipts_from_miner(hotkey: str, ip: str, port: int):
         shutil.copyfileobj(response.raw, temp_file)
         temp_file.seek(0)
 
-        tolerance = RECEIPTS_CUTOFF_TOLERANCE
+        last_receipt_timestamp: datetime.datetime | None = None
+        for model in [JobStartedReceipt, JobAcceptedReceipt, JobFinishedReceipt]:
+            obj = model.objects.filter(miner_hotkey=hotkey).order_by("-timestamp").first()
+            if obj is None:
+                continue
+            if last_receipt_timestamp is None:
+                last_receipt_timestamp = obj.timestamp
+            else:
+                last_receipt_timestamp = max(last_receipt_timestamp, obj.timestamp)
 
-        log.info("query for last start receipt", miner_hotkey=hotkey)
-        latest_job_started_receipt = (
-            JobStartedReceipt.objects.filter(miner_hotkey=hotkey).order_by("-time_accepted").first()
-        )
-        log.info("got last receipt", miner_hotkey=hotkey)
-        job_started_receipt_cutoff_time = (
-            latest_job_started_receipt.time_accepted - tolerance if latest_job_started_receipt else None
-        )
-
-        log.info("query for last finish receipt", miner_hotkey=hotkey)
-        latest_job_finished_receipt = (
-            JobFinishedReceipt.objects.filter(miner_hotkey=hotkey).order_by("-time_started").first()
-        )
-        log.info("got last finish receipt", miner_hotkey=hotkey)
-        job_finished_receipt_cutoff_time = (
-            latest_job_finished_receipt.time_started - tolerance if latest_job_finished_receipt else None
-        )
+        if last_receipt_timestamp is not None:
+            last_receipt_timestamp -= RECEIPTS_CUTOFF_TOLERANCE
 
         wrapper = io.TextIOWrapper(temp_file)
         csv_reader = csv.DictReader(wrapper)
         for raw_receipt in csv_reader:
             try:
+                timestamp = datetime.datetime.fromisoformat(raw_receipt["timestamp"])
+                if last_receipt_timestamp is not None and timestamp <= last_receipt_timestamp:
+                    continue
+
                 receipt_type = raw_receipt["type"]
                 match receipt_type:
-                    case "JobStartedReceipt":
-                        time_accepted = datetime.datetime.fromisoformat(raw_receipt["time_accepted"])
-                        if (
-                            job_started_receipt_cutoff_time is not None
-                            and time_accepted <= job_started_receipt_cutoff_time
-                        ):
-                            continue
+                    case ReceiptType.JobStartedReceipt:
                         payload = JobStartedReceiptPayload(
                             job_uuid=raw_receipt["job_uuid"],
                             miner_hotkey=raw_receipt["miner_hotkey"],
                             validator_hotkey=raw_receipt["validator_hotkey"],
+                            timestamp=raw_receipt["timestamp"],
                             executor_class=ExecutorClass(raw_receipt["executor_class"]),
-                            time_accepted=time_accepted,
                             max_timeout=int(raw_receipt["max_timeout"]),
                             is_organic=raw_receipt["is_organic"] == "True",
+                            ttl=int(raw_receipt["ttl"]),
                         )
-
-                    case "JobFinishedReceipt":
-                        time_started = datetime.datetime.fromisoformat(raw_receipt["time_started"])
-                        if (
-                            job_finished_receipt_cutoff_time is not None
-                            and time_started <= job_finished_receipt_cutoff_time
-                        ):
-                            continue
+                    case ReceiptType.JobAcceptedReceipt:
+                        payload = JobAcceptedReceiptPayload(
+                            job_uuid=raw_receipt["job_uuid"],
+                            miner_hotkey=raw_receipt["miner_hotkey"],
+                            validator_hotkey=raw_receipt["validator_hotkey"],
+                            timestamp=raw_receipt["timestamp"],
+                            time_accepted=raw_receipt["time_accepted"],
+                            ttl=int(raw_receipt["ttl"]),
+                        )
+                    case ReceiptType.JobFinishedReceipt:
                         payload = JobFinishedReceiptPayload(
                             job_uuid=raw_receipt["job_uuid"],
                             miner_hotkey=raw_receipt["miner_hotkey"],
                             validator_hotkey=raw_receipt["validator_hotkey"],
-                            time_started=time_started,
+                            timestamp=raw_receipt["timestamp"],
+                            time_started=raw_receipt["time_started"],
                             time_took_us=int(raw_receipt["time_took_us"]),
                             score_str=raw_receipt["score_str"],
                         )
+                    case unknown_type:
+                        log.warning(
+                            "Miner sent unknown receipt_type",
+                            miner_hotkey=hotkey,
+                            receipt_type=unknown_type,
+                            raw_receipt=raw_receipt,
+                        )
+                        continue
 
                 receipt = Receipt(
                     payload=payload,
@@ -340,10 +350,11 @@ def fetch_receipts_from_miner(hotkey: str, ip: str, port: int):
             miner_hotkey=receipt.payload.miner_hotkey,
             validator_signature=receipt.validator_signature,
             miner_signature=receipt.miner_signature,
+            timestamp=receipt.payload.timestamp,
             executor_class=receipt.payload.executor_class,
-            time_accepted=receipt.payload.time_accepted,
             max_timeout=receipt.payload.max_timeout,
             is_organic=receipt.payload.is_organic,
+            ttl=receipt.payload.ttl,
         )
         for receipt in receipts
         if isinstance(receipt.payload, JobStartedReceiptPayload)
@@ -353,6 +364,25 @@ def fetch_receipts_from_miner(hotkey: str, ip: str, port: int):
         JobStartedReceipt.objects.bulk_create(job_started_receipt_to_create, ignore_conflicts=True)
     log.info("start receipts created", miner_hotkey=hotkey)
 
+    job_accepted_receipt_to_create = [
+        JobAcceptedReceipt(
+            job_uuid=receipt.payload.job_uuid,
+            validator_hotkey=receipt.payload.validator_hotkey,
+            miner_hotkey=receipt.payload.miner_hotkey,
+            validator_signature=receipt.validator_signature,
+            miner_signature=receipt.miner_signature,
+            timestamp=receipt.payload.timestamp,
+            time_accepted=receipt.payload.time_accepted,
+            ttl=receipt.payload.ttl,
+        )
+        for receipt in receipts
+        if isinstance(receipt.payload, JobAcceptedReceiptPayload)
+    ]
+    log.info("accept receipts create", miner_hotkey=hotkey, receipts_count=len(job_accepted_receipt_to_create))
+    if job_accepted_receipt_to_create:
+        JobAcceptedReceipt.objects.bulk_create(job_accepted_receipt_to_create, ignore_conflicts=True)
+    log.info("accept receipts created", miner_hotkey=hotkey)
+
     job_finished_receipt_to_create = [
         JobFinishedReceipt(
             job_uuid=receipt.payload.job_uuid,
@@ -360,6 +390,7 @@ def fetch_receipts_from_miner(hotkey: str, ip: str, port: int):
             miner_hotkey=receipt.payload.miner_hotkey,
             validator_signature=receipt.validator_signature,
             miner_signature=receipt.miner_signature,
+            timestamp=receipt.payload.timestamp,
             time_started=receipt.payload.time_started,
             time_took_us=receipt.payload.time_took_us,
             score_str=receipt.payload.score_str,

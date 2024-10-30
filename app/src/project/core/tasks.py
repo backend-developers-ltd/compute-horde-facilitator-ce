@@ -275,7 +275,6 @@ def fetch_receipts_from_miner(hotkey: str, ip: str, port: int):
             try:
                 timestamp = datetime.datetime.fromisoformat(raw_receipt["timestamp"])
                 if last_receipt_timestamp is not None and timestamp <= last_receipt_timestamp:
-                    log.info("skipping", raw_receipt=raw_receipt)
                     continue
 
                 receipt_type = raw_receipt["type"]

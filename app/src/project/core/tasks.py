@@ -407,6 +407,11 @@ def fetch_receipts_from_miner(hotkey: str, ip: str, port: int):
 @app.task
 def fetch_receipts():
     """Fetch job receipts from the miners."""
+    # Delete old receipts before fetching new ones
+    JobStartedReceipt.objects.filter(timestamp__lt=now() - timedelta(days=30)).delete()
+    JobAcceptedReceipt.objects.filter(timestamp__lt=now() - timedelta(days=30)).delete()
+    JobFinishedReceipt.objects.filter(timestamp__lt=now() - timedelta(days=30)).delete()
+
     import bittensor
 
     metagraph = bittensor.metagraph(netuid=settings.BITTENSOR_NETUID, network=settings.BITTENSOR_NETWORK)

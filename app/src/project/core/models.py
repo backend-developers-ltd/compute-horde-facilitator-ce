@@ -73,6 +73,10 @@ class SignatureInfo(models.Model):
 
     signed_payload = models.JSONField(db_comment="raw payload that was signed")
 
+    # timestamp_ns is part of an incoming request,
+    # we need created_at to track row insertion time for cleanup etc.
+    created_at = models.DateTimeField(default=now)
+
     @classmethod
     def from_signature(cls, user, signature):
         return cls.objects.create(
@@ -583,6 +587,8 @@ class GPU(models.Model):
     fp32 = models.FloatField(default=0, help_text="in TFLOPS")
     fp64 = models.FloatField(default=0, help_text="in TFLOPS")
 
+    created_at = models.DateTimeField(default=now)
+
     def __str__(self) -> str:
         return self.name
 
@@ -644,6 +650,7 @@ class CpuSpecs(models.Model):
 
 class RawSpecsData(models.Model):
     data = models.JSONField()
+    created_at = models.DateTimeField(default=now)
 
     class Meta:
         constraints = [
@@ -660,7 +667,7 @@ class ExecutorSpecsSnapshot(ExportModelOperationsMixin("executor_specs_snapshot"
     validator = models.ForeignKey(Validator, on_delete=models.CASCADE)
     measured_at = models.DateTimeField(default=now)
 
-    raw_specs = models.ForeignKey(RawSpecsData, on_delete=models.PROTECT, related_name="raw_specs_data")
+    raw_specs = models.ForeignKey(RawSpecsData, on_delete=models.CASCADE, related_name="raw_specs_data")
 
     def __str__(self) -> str:
         return (
@@ -669,7 +676,7 @@ class ExecutorSpecsSnapshot(ExportModelOperationsMixin("executor_specs_snapshot"
 
 
 class ParsedSpecsData(models.Model):
-    id = models.OneToOneField(RawSpecsData, primary_key=True, on_delete=models.PROTECT)
+    id = models.OneToOneField(RawSpecsData, primary_key=True, on_delete=models.CASCADE)
     cpu_specs = models.ForeignKey(CpuSpecs, on_delete=models.PROTECT, related_name="cpu_specs")
     other_specs = models.ForeignKey(OtherSpecs, on_delete=models.PROTECT, related_name="other_specs")
 

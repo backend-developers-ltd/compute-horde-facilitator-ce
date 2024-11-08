@@ -318,6 +318,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": timedelta(minutes=60),
         "options": {},
     },
+    "evict_old_data": {
+        "task": "project.core.tasks.evict_old_data",
+        "schedule": timedelta(days=1),
+        "options": {},
+    },
 }
 CELERY_TASK_ROUTES = ["project.celery.route_task"]
 CELERY_TASK_TIME_LIMIT = int(timedelta(minutes=5).total_seconds())

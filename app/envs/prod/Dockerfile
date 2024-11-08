@@ -7,7 +7,7 @@ ARG GITHUB_TOKEN=
 
 WORKDIR /root/src/
 
-RUN pip3 install --no-cache-dir 'pdm>=2.12,<3'
+RUN pip3 install --no-cache-dir pdm==2.19.3
 
 COPY ./pyproject.toml ./pdm.lock ./
 RUN pdm lock --check

@@ -32,6 +32,7 @@ from requests import RequestException
 
 from project.celery import app
 
+from . import eviction
 from .models import (
     GPU,
     Channel,
@@ -407,11 +408,6 @@ def fetch_receipts_from_miner(hotkey: str, ip: str, port: int):
 @app.task
 def fetch_receipts():
     """Fetch job receipts from the miners."""
-    # Delete old receipts before fetching new ones
-    JobStartedReceipt.objects.filter(timestamp__lt=now() - timedelta(days=30)).delete()
-    JobAcceptedReceipt.objects.filter(timestamp__lt=now() - timedelta(days=30)).delete()
-    JobFinishedReceipt.objects.filter(timestamp__lt=now() - timedelta(days=30)).delete()
-
     import bittensor
 
     metagraph = bittensor.metagraph(netuid=settings.BITTENSOR_NETUID, network=settings.BITTENSOR_NETWORK)
@@ -425,3 +421,8 @@ def refresh_specs_materialized_view():
     log.info("Refreshing specs materialized view")
     with connection.cursor() as cursor:
         cursor.execute("REFRESH MATERIALIZED VIEW CONCURRENTLY specs")
+
+
+@app.task
+def evict_old_data():
+    eviction.evict_all()

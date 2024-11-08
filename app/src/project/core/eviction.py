@@ -1,4 +1,5 @@
 import importlib
+import logging
 from datetime import timedelta
 
 from compute_horde.receipts.models import JobAcceptedReceipt, JobFinishedReceipt, JobStartedReceipt
@@ -23,6 +24,8 @@ MINER_VERSION_RETENTION_PERIOD = timedelta(days=30)
 SIGNATURE_INFO_RETENTION_PERIOD = timedelta(days=7)
 MACHINE_SPECS_RETENTION_PERIOD = timedelta(days=7)
 
+logger = logging.getLogger(__name__)
+
 
 def evict_all() -> None:
     evict_receipts()
@@ -34,6 +37,7 @@ def evict_all() -> None:
 
 
 def evict_receipts() -> None:
+    logger.info("Evicting old receipts")
     cutoff = now() - RECEIPTS_RETENTION_PERIOD
     JobStartedReceipt.objects.filter(timestamp__lt=cutoff).delete()
     JobAcceptedReceipt.objects.filter(timestamp__lt=cutoff).delete()
@@ -41,21 +45,25 @@ def evict_receipts() -> None:
 
 
 def evict_jobs() -> None:
+    logger.info("Evicting old jobs")
     cutoff = now() - JOBS_RETENTION_PERIOD
     Job.objects.filter(created_at__lt=cutoff).delete()
 
 
 def evict_miner_versions() -> None:
+    logger.info("Evicting old miner versions")
     cutoff = now() - MINER_VERSION_RETENTION_PERIOD
     MinerVersion.objects.filter(created_at__lt=cutoff).delete()
 
 
 def evict_signature_info() -> None:
+    logger.info("Evicting old signature infos")
     cutoff = now() - SIGNATURE_INFO_RETENTION_PERIOD
     SignatureInfo.objects.filter(created_at__lt=cutoff).delete()
 
 
 def evict_machine_specs() -> None:
+    logger.info("Evicting old machine specs")
     cutoff = now() - MACHINE_SPECS_RETENTION_PERIOD
 
     # Will also cascade delete:

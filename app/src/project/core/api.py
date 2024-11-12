@@ -45,6 +45,7 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
         model = Job
         fields = (
             "uuid",
+            "executor_class",
             "created_at",
             "last_update",
             "status",
@@ -116,6 +117,7 @@ class DockerJobSerializer(DynamicJobFields, JobSerializer):
             set(JobSerializer.Meta.fields)
             - {
                 "docker_image",
+                "executor_class",
                 "args",
                 "env",
                 "use_gpu",

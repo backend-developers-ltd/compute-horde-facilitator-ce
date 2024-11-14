@@ -149,7 +149,7 @@ class BaseCreateJobViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             raise ValidationError("Job creation is disabled at this moment")
 
         try:
-            serializer.save(user=self.request.user, signature_info=self.request.signature_info)
+            serializer.save(user=self.request.user, signature=self.request.signature)
         except ObjectDoesNotExist as exc:
             model_name = exc.__class__.__qualname__.partition(".")[0]
             raise ValidationError(f"Could not select {model_name}")
@@ -220,7 +220,7 @@ class JobFeedbackViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, vie
         serializer.save(
             job=job,
             user=self.request.user,
-            signature_info=self.request.signature_info,
+            signature=self.request.signature,
         )
 
     def get(self, request, *args, **kwargs):

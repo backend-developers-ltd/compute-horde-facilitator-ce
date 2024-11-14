@@ -1,9 +1,9 @@
 import base64
 
 import pytest
+from compute_horde.fv_protocol.facilitator_requests import Signature
 from compute_horde.signature import (
     VERIFIERS_REGISTRY,
-    Signature,
     SignatureInvalidException,
     signature_to_headers,
 )

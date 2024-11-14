@@ -2,7 +2,7 @@ import time
 from unittest.mock import patch
 
 import pytest
-from compute_horde.signature import Signature
+from compute_horde.fv_protocol.facilitator_requests import Signature
 from django.contrib.auth.models import User
 from rest_framework.exceptions import ErrorDetail
 from rest_framework.test import APIClient

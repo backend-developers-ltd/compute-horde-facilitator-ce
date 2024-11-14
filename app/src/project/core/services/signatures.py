@@ -1,27 +1,16 @@
 import json
 
+from compute_horde.fv_protocol.facilitator_requests import SignedFields
 from compute_horde.signature import VERIFIERS_REGISTRY, Signature, SignatureInvalidException, signature_from_headers
 from django.http import HttpRequest
 
-from project.core.models import SignatureInfo
 
-
-def signature_info_from_signature(signature: Signature, payload) -> SignatureInfo:
-    return SignatureInfo(
-        signature_type=signature.signature_type,
-        signatory=signature.signatory,
-        timestamp_ns=signature.timestamp_ns,
-        signature=signature.signature,
-        signed_payload=payload,
-    )
-
-
-def signature_info_from_request(request: HttpRequest) -> SignatureInfo:
+def signature_from_request(request: HttpRequest) -> Signature:
     """
     Extracts the signature from the request and verifies it.
 
     :param request: HttpRequest object
-    :return: SignatureInfo from the request
+    :return: Signature from the request
     :raises SignatureNotFound: if the signature is not found in the request
     :raises SignatureInvalidException: if the signature is invalid
     """
@@ -34,9 +23,7 @@ def signature_info_from_request(request: HttpRequest) -> SignatureInfo:
         json_body = json.loads(request.body)
     except ValueError:
         json_body = None
-    payload = verifier.payload_from_request(
-        request.method, request.build_absolute_uri(), headers=dict(request.headers), json=json_body
-    )
-    verifier.verify(payload, signature)
-    signature_info = signature_info_from_signature(signature, payload=payload)
-    return signature_info
+
+    signed_fields = SignedFields.from_facilitator_sdk_json(json_body)
+    verifier.verify(signed_fields.model_dump_json(), signature)
+    return signature

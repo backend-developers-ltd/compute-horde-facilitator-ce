@@ -554,7 +554,8 @@ class JobFeedback(models.Model):
 
     result_correctness = models.FloatField(default=1, help_text="<0-1> where 1 means 100% correct")
     expected_duration = models.FloatField(blank=True, null=True, help_text="Expected duration of the job in seconds")
-    signature_info = models.ForeignKey(SignatureInfo, on_delete=models.CASCADE)
+    signature_info = models.ForeignKey(SignatureInfo, on_delete=models.CASCADE, null=True)
+    signature = models.JSONField(blank=True, null=True)
 
     def __str__(self) -> str:
         return f"Feedback for job {self.job.uuid} by {self.user.username}"

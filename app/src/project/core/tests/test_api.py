@@ -1,14 +1,14 @@
+import base64
 import time
 from unittest.mock import patch
 
 import pytest
-from compute_horde.signature import Signature
+from compute_horde.fv_protocol.facilitator_requests import Signature
 from django.contrib.auth.models import User
 from rest_framework.exceptions import ErrorDetail
 from rest_framework.test import APIClient
 
-from project.core.models import Job, JobFeedback, SignatureInfo
-from project.core.services.signatures import signature_info_from_signature
+from project.core.models import Job, JobFeedback
 
 
 @pytest.fixture
@@ -38,19 +38,14 @@ def signature():
         signature_type="dummy_signature_type",
         signatory="dummy_signatory",
         timestamp_ns=time.time_ns(),
-        signature=b"dummy_signature",
+        signature=base64.b64encode(b"dummy_signature"),
     )
 
 
 @pytest.fixture
-def signature_info(signature):
-    return signature_info_from_signature(signature, payload={"dummy": "payload"})
-
-
-@pytest.fixture
-def mock_signature_info_from_request(signature_info):
-    with patch("project.core.middleware.signature_middleware.signature_info_from_request") as mock:
-        mock.return_value = signature_info
+def mock_signature_from_request(signature):
+    with patch("project.core.middleware.signature_middleware.signature_from_request") as mock:
+        mock.return_value = signature
         yield mock
 
 
@@ -202,7 +197,7 @@ def test_job_feedback__create__requires_signature(authenticated_api_client):
     )
 
 
-def test_job_feedback__create_n_retrieve(authenticated_api_client, mock_signature_info_from_request, job_docker):
+def test_job_feedback__create_n_retrieve(authenticated_api_client, mock_signature_from_request, job_docker):
     data = {"result_correctness": 0.5, "expected_duration": 10.0}
 
     response = authenticated_api_client.put(f"/api/v1/jobs/{job_docker.uuid}/feedback/", data)
@@ -215,17 +210,8 @@ def test_job_feedback__create_n_retrieve(authenticated_api_client, mock_signatur
     assert (response.status_code, response.data) == (200, data)
 
 
-def test_job_feedback__already_exists(authenticated_api_client, mock_signature_info_from_request, job_docker, user):
-    job_feedback = JobFeedback.objects.create(
-        job=job_docker,
-        result_correctness=1,
-        user=user,
-        signature_info=SignatureInfo.objects.create(
-            timestamp_ns=0,
-            signature=b"",
-            signed_payload={},
-        ),
-    )
+def test_job_feedback__already_exists(authenticated_api_client, mock_signature_from_request, job_docker, user):
+    job_feedback = JobFeedback.objects.create(job=job_docker, result_correctness=1, user=user)
     data = {"result_correctness": 0.5, "expected_duration": 10.0}
 
     response = authenticated_api_client.put(f"/api/v1/jobs/{job_docker.uuid}/feedback/", data)

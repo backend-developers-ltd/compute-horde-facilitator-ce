@@ -1,7 +1,11 @@
+import logging
+
 from compute_horde.signature import SignatureNotFound
 from django.utils.deprecation import MiddlewareMixin
 
-from ..services.signatures import signature_info_from_request
+from ..services.signatures import signature_from_request
+
+logger = logging.getLogger(__name__)
 
 
 class FacilitatorSignatureMiddleware(MiddlewareMixin):
@@ -11,15 +15,13 @@ class FacilitatorSignatureMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
         try:
-            signature_info = signature_info_from_request(request)
+            request.signature = signature_from_request(request).model_dump()
         except SignatureNotFound:
-            signature_info = None
-        else:
-            signature_info.save()
-
-        request.signature_info = signature_info
+            logger.warning("Request headers does not contain a signature")
+            request.signature = None
+            pass
 
 
 def require_signature(request):
-    if not getattr(request, "signature_info", None):
+    if not getattr(request, "signature", None):
         raise SignatureNotFound("Request signature not found, but is required")

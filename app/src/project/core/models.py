@@ -1,4 +1,3 @@
-import base64
 import shlex
 from collections.abc import Callable
 from contextlib import suppress
@@ -57,6 +56,7 @@ class JobNotFinishedError(Exception):
     pass
 
 
+# TODO: deprecate this model
 class SignatureInfo(models.Model):
     """
     Model for storing signed requests issued through Facilitator SDK.
@@ -193,6 +193,7 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
     signature_info = models.ForeignKey(
         SignatureInfo, blank=True, default=None, null=True, on_delete=models.PROTECT, related_name="jobs"
     )
+    signature = models.JSONField(blank=True, default=None, null=True)
     created_at = models.DateTimeField(default=now)
 
     executor_class = models.CharField(
@@ -275,7 +276,7 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
         log.debug("connected validators", validator_ids=validator_ids)
 
         if self.target_validator_hotkey is not None:
-            if self.signature_info is None:
+            if self.signature is None:
                 raise ValueError("Request must be signed when target_validator_hotkey is set")
             validator = Validator.objects.filter(ss58_address=self.target_validator_hotkey).first()
             if validator and validator.id in validator_ids:
@@ -448,14 +449,11 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
                 )
             else:
                 output_upload = None
-            if self.signature_info is not None:
+            if self.signature is not None:
                 assert self.miner is None
-                signature = Signature(
-                    signature_type=self.signature_info.signature_type,
-                    signatory=self.signature_info.signatory,
-                    timestamp_ns=self.signature_info.timestamp_ns,
-                    signature=base64.b64encode(self.signature_info.signature).decode("utf8"),
-                )
+
+                signature = Signature.model_validate(self.signature)
+
                 return V2JobRequest(
                     uuid=str(self.uuid),
                     executor_class=self.executor_class,
@@ -556,7 +554,8 @@ class JobFeedback(models.Model):
 
     result_correctness = models.FloatField(default=1, help_text="<0-1> where 1 means 100% correct")
     expected_duration = models.FloatField(blank=True, null=True, help_text="Expected duration of the job in seconds")
-    signature_info = models.ForeignKey(SignatureInfo, on_delete=models.CASCADE)
+    signature_info = models.ForeignKey(SignatureInfo, on_delete=models.CASCADE, null=True)
+    signature = models.JSONField(blank=True, null=True)
 
     def __str__(self) -> str:
         return f"Feedback for job {self.job.uuid} by {self.user.username}"

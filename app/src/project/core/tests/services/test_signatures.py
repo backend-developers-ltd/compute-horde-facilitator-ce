@@ -1,15 +1,13 @@
-import base64
-
 import pytest
+from compute_horde.fv_protocol.facilitator_requests import Signature
 from compute_horde.signature import (
     VERIFIERS_REGISTRY,
-    Signature,
     SignatureInvalidException,
     signature_to_headers,
 )
 from django.utils.datastructures import CaseInsensitiveMapping
 
-from project.core.services.signatures import signature_info_from_request, signature_info_from_signature
+from project.core.services.signatures import signature_from_request
 
 
 @pytest.fixture
@@ -43,7 +41,7 @@ def signature(keypair, payload_from_request):
         signature_type="bittensor",
         signatory=keypair.ss58_address,
         timestamp_ns=1719427963187622189,
-        signature=base64.b85decode("oH9<VaQ`;rRSBpEE@-r|Cb-DNWI*dZrUew5&;-C{Zfi2~bLQwK3(b}S@UiT}rD{8`(T{c>@)8<R-Cgj6"),
+        signature=b"nDJOrHD/NuNVCagHLmi0sSa4yMRkQOs9pgUUmtAEwGZuazLyc+boJgvNlgLwsezDpWo7r9GPdh7yEhpR3V3whA==",
     )
     # This signature was generated using the following code:
     # signer = SIGNERS_REGISTRY.get("bittensor", keypair)
@@ -58,30 +56,9 @@ def mock_request_with_signature(mock_request, signature):
     return mock_request
 
 
-def test_signature_info_from_signature(signature):
-    payload = {"key": "value"}
-    signature_info = signature_info_from_signature(signature, payload)
-
-    assert signature_info.signature_type == signature.signature_type
-    assert signature_info.signatory == signature.signatory
-    assert signature_info.timestamp_ns == signature.timestamp_ns
-    assert signature_info.signature == signature.signature
-    assert signature_info.signed_payload == payload
-
-
-def test_signature_info_from_request(mock_request_with_signature, signature, request_json):
-    signature_info = signature_info_from_request(mock_request_with_signature)
-
-    assert signature_info.signature_type == signature.signature_type
-    assert signature_info.signatory == signature.signatory
-    assert signature_info.timestamp_ns == signature.timestamp_ns
-    assert signature_info.signature == signature.signature
-    assert signature_info.signed_payload == {"action": "POST /test-url/", "json": request_json}
-
-
-def test_signature_info_from_request__invalid_signature(mock_request_with_signature):
+def test_signature_from_request__invalid_signature(mock_request_with_signature):
     mock_request_with_signature.headers = CaseInsensitiveMapping(
-        {**mock_request_with_signature.headers, **{"X-CH-Signature": "invalid_signature"}}
+        {**mock_request_with_signature.headers, **{"X-CH-Signature-Type": "invalid"}}
     )
     with pytest.raises(SignatureInvalidException):
-        signature_info_from_request(mock_request_with_signature)
+        signature_from_request(mock_request_with_signature)

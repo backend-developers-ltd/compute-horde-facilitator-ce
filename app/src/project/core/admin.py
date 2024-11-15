@@ -283,6 +283,7 @@ class JobFeedbackAdmin(admin.ModelAdmin):
         return obj.signature_info.signature_type
 
 
+# TODO: deprecate
 @admin.register(SignatureInfo)
 class SignatureInfoAdmin(admin.ModelAdmin):
     list_display = ("timestamp_ns", "signature_type", "signatory", "signed_payload")

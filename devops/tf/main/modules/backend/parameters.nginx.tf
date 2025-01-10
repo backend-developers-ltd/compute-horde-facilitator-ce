@@ -39,6 +39,10 @@ resource "aws_ssm_parameter" "helpers" {
   name    = "/application/${var.name}/${var.env}/nginx/config_helpers/${local.helpers[count.index].name}"
   type    = "SecureString"
   value   = file(local.helpers[count.index].content)
+
+  lifecycle {
+    ignore_changes = [ value, tags ]
+  }
 }
 
 resource "aws_ssm_parameter" "templates" {
@@ -46,4 +50,8 @@ resource "aws_ssm_parameter" "templates" {
   name    = "/application/${var.name}/${var.env}/nginx/templates/${local.templates[count.index].name}"
   type    = "SecureString"
   value   = file(local.templates[count.index].content)
+
+  lifecycle {
+    ignore_changes = [ value, tags ]
+  }
 }

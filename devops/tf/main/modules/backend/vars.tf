@@ -8,6 +8,7 @@ variable "subnets" {}
 variable "azs" {}
 
 variable "base_ami_id" {}
+variable "base_domain" {}
 variable "base_domain_name" {}
 
 variable "domain_name" {}

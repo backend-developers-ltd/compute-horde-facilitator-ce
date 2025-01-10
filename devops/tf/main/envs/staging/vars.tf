@@ -30,6 +30,10 @@ variable "azs" {
   type    = set(string)
 }
 
+variable "base_domain" {
+  type = string
+}
+
 variable "base_domain_name" {
   type    = string
 }

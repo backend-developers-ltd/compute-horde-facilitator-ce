@@ -16,14 +16,15 @@ base_ami_image        = "*ubuntu-focal-20.04-amd64-minimal-*"
 base_ami_image_owner  = "099720109477"
 
 # domain setting
+base_domain      = "facilitator.computehorde.io"
 base_domain_name = "computehorde.io"
 domain_name      = "facilitator.computehorde.io"
 
 # default ssh key
 ec2_ssh_key      = ""
 
-instance_type     = "c6a.large"
-rds_instance_type = "db.t3.small"
+instance_type     = "c6a.xlarge"
+rds_instance_type = "db.t3.medium"
 
 # defines if we use EC2-only healthcheck or ELB healthcheck
 # EC2 healthcheck reacts only on internal EC2 checks (i.e. if machine cannot be reached)

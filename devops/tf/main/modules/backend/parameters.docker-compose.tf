@@ -10,4 +10,8 @@ resource "aws_ssm_parameter" "compose" {
     ecr_base_url  = var.ecr_base_url
     ecr_image     = var.ecr_image
   })
+
+  lifecycle {
+    ignore_changes = [ value, tags ]
+  }
 }

@@ -63,6 +63,7 @@ module "backend" {
   ecr_base_url     = local.ecr_base_url
   ecr_image        = local.ecr_image
 
+  base_domain      = var.base_domain
   base_domain_name = var.base_domain_name
   domain_name      = var.domain_name
   ec2_ssh_key      = var.ec2_ssh_key

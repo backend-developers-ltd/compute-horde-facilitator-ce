@@ -16,6 +16,7 @@ base_ami_image        = "*ubuntu-focal-20.04-amd64-minimal-*"
 base_ami_image_owner  = "099720109477"
 
 # domain setting
+base_domain      = "facilitator.computehorde.io"
 base_domain_name = "computehorde.io"
 domain_name      = "staging.facilitator.computehorde.io"
 

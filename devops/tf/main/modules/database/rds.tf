@@ -47,6 +47,21 @@ resource "aws_db_instance" "self" {
   tags = {
     Project = var.name
   }
+
+  lifecycle {
+    ignore_changes = [
+      allocated_storage,
+      max_allocated_storage,
+      storage_encrypted,
+      engine,
+      instance_class,
+      username,
+      db_name,
+      password,
+      skip_final_snapshot,
+      tags
+    ]
+  }
 }
 
 resource "aws_db_instance" "replica" {
@@ -65,5 +80,17 @@ resource "aws_db_instance" "replica" {
 
   tags = {
     Project = var.name
+  }
+
+  lifecycle {
+    ignore_changes = [
+      allocated_storage,
+      max_allocated_storage,
+      storage_encrypted,
+      engine,
+      instance_class,
+      skip_final_snapshot,
+      tags
+    ]
   }
 }

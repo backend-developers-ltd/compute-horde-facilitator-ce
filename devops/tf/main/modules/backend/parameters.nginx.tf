@@ -29,9 +29,6 @@ resource "aws_ssm_parameter" "certs" {
   name    = "/application/${var.name}/${var.env}/nginx/monitoring_certs/${local.certs[count.index].name}"
   type    = "SecureString"
   value   = file(local.certs[count.index].content)
-  lifecycle {
-    ignore_changes = [ value ]
-  }
 }
 
 resource "aws_ssm_parameter" "helpers" {
@@ -40,9 +37,6 @@ resource "aws_ssm_parameter" "helpers" {
   type    = "SecureString"
   value   = file(local.helpers[count.index].content)
 
-  lifecycle {
-    ignore_changes = [ value, tags ]
-  }
 }
 
 resource "aws_ssm_parameter" "templates" {
@@ -51,7 +45,4 @@ resource "aws_ssm_parameter" "templates" {
   type    = "SecureString"
   value   = file(local.templates[count.index].content)
 
-  lifecycle {
-    ignore_changes = [ value, tags ]
-  }
 }

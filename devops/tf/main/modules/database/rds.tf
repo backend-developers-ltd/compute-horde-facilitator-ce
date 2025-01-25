@@ -29,7 +29,7 @@ resource "aws_db_instance" "self" {
   identifier             = "${var.name}-${var.env}-db"
   publicly_accessible    = true
   allocated_storage      = 15
-  max_allocated_storage  = 20
+  max_allocated_storage  = 500
   storage_encrypted      = true
   engine                 = "postgres"
   instance_class         = var.instance_type
@@ -46,22 +46,9 @@ resource "aws_db_instance" "self" {
 
   tags = {
     Project = var.name
+    persistent = "true"
   }
 
-  lifecycle {
-    ignore_changes = [
-      allocated_storage,
-      max_allocated_storage,
-      storage_encrypted,
-      engine,
-      instance_class,
-      username,
-      db_name,
-      password,
-      skip_final_snapshot,
-      tags
-    ]
-  }
 }
 
 resource "aws_db_instance" "replica" {
@@ -70,7 +57,8 @@ resource "aws_db_instance" "replica" {
   publicly_accessible    = true
   storage_encrypted      = true
   engine                 = "postgres"
-  instance_class         = var.instance_type
+  max_allocated_storage  = 500
+  instance_class         = "db.t3.small"
   skip_final_snapshot    = true
   availability_zone      = var.azs[0]
   vpc_security_group_ids = [aws_security_group.db.id]
@@ -80,17 +68,7 @@ resource "aws_db_instance" "replica" {
 
   tags = {
     Project = var.name
+    persistent = "true"
   }
 
-  lifecycle {
-    ignore_changes = [
-      allocated_storage,
-      max_allocated_storage,
-      storage_encrypted,
-      engine,
-      instance_class,
-      skip_final_snapshot,
-      tags
-    ]
-  }
 }

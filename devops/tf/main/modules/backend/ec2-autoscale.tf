@@ -39,11 +39,6 @@ resource "aws_launch_template" "self" {
     aws_security_group.internal.id
   ]
 
-  lifecycle {
-    ignore_changes = [
-      image_id
-    ]
-  }
 }
 
 resource "aws_autoscaling_group" "self" {

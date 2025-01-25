@@ -12,11 +12,6 @@ resource "aws_ssm_parameter" "envrc" {
     ecr_image     = var.ecr_image
   })
 
-  lifecycle {
-    ignore_changes = [
-      value, tags
-    ]
-  }
 }
 
 
@@ -35,9 +30,4 @@ resource "aws_ssm_parameter" "env" {
     database_connection_string  = var.database.connection_string
   })
 
-  lifecycle {
-    ignore_changes = [
-      value
-    ]
-  }
 }

@@ -136,7 +136,7 @@ class ValidatorConsumer(AsyncWebsocketConsumer):
                 error = Error(
                     msg="Validator not found",
                     type="auth.validator_not_found",
-                    help=f"Validator with this public key was not found. "
+                    help=f"Validator with hotkey {message.ss58_address} was not found. "
                     f"If you are sure that the key belongs to an active validator, "
                     f"please wait at least {settings.METAGRAPH_SYNC_PERIOD} "
                     f"for the list of active validators to be updated and then retry.",

@@ -5,19 +5,18 @@ LABEL builder=true
 ARG ADDITIONAL_PACKAGES=
 ARG GITHUB_TOKEN=
 
+RUN apt-get update && apt-get install -y git
+
+COPY --from=ghcr.io/astral-sh/uv:0.5 /uv /uvx /bin/
+
 WORKDIR /root/src/
 
-RUN pip3 install --no-cache-dir pdm==2.19.3
+COPY ./pyproject.toml ./uv.lock ./
 
-COPY ./pyproject.toml ./pdm.lock ./
-RUN pdm lock --check
+# Enable bytecode compilation
+ENV UV_COMPILE_BYTECODE=1
 
-RUN apt-get update && apt-get install -y git
-
-RUN pdm config python.use_venv False && \
-    pdm sync --prod --group :all --no-isolation
-
-RUN apt-get update && apt-get install -y git
+RUN PDM_BUILD_SCM_VERSION=0 uv sync --frozen --no-install-project --no-dev --no-editable
 
 RUN echo "Additional packages: $(echo "$ADDITIONAL_PACKAGES" | sed "s/\$GITHUB_TOKEN/$GITHUB_TOKEN/g")"
 RUN [ -n "$ADDITIONAL_PACKAGES" ] && \

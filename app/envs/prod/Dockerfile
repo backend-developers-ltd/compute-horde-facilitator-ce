@@ -20,7 +20,7 @@ RUN pdm config python.use_venv False && \
 RUN echo "Additional packages: $(echo "$ADDITIONAL_PACKAGES" | sed "s/\$GITHUB_TOKEN/$GITHUB_TOKEN/g")"
 RUN [ -n "$ADDITIONAL_PACKAGES" ] && \
     echo "$ADDITIONAL_PACKAGES" | sed "s/\$GITHUB_TOKEN/$GITHUB_TOKEN/g" > additional-packages.txt && \
-    while IFS= read -r package; do pdm add "$package"; done < additional-packages.txt || true
+    pip install -r additional-packages.txt
 
 RUN mkdir -p /opt/ && mv __pypackages__/3.11/ /opt/pypackages/
 ENV PATH=/opt/pypackages/bin:$PATH

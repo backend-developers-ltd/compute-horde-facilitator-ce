@@ -124,7 +124,7 @@ class ValidatorConsumer(AsyncWebsocketConsumer):
                 error = Error(
                     msg="Already authenticated",
                     type="auth.already_authenticated",
-                    help="You are already authenticated, please do not " "send authentication request again.",
+                    help="You are already authenticated, please do not send authentication request again.",
                 )
                 log.debug("authentication failed", error=error)
                 response = Response(status="error", errors=[error])

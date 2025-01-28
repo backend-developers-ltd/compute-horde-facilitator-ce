@@ -17,10 +17,7 @@ RUN apt-get update && apt-get install -y git
 RUN pdm config python.use_venv False && \
     pdm sync --prod --group :all --no-isolation
 
-RUN echo "Additional packages: $(echo "$ADDITIONAL_PACKAGES" | sed "s/\$GITHUB_TOKEN/$GITHUB_TOKEN/g")"
-RUN [ -n "$ADDITIONAL_PACKAGES" ] && \
-    echo "$ADDITIONAL_PACKAGES" | sed "s/\$GITHUB_TOKEN/$GITHUB_TOKEN/g" > additional-packages.txt && \
-    pip install -r additional-packages.txt
+
 
 RUN mkdir -p /opt/ && mv __pypackages__/3.11/ /opt/pypackages/
 ENV PATH=/opt/pypackages/bin:$PATH
@@ -36,6 +33,13 @@ RUN ENV=prod ENV_FILL_MISSING_VALUES=1 SECRET_KEY=dummy python3 manage.py collec
 FROM $BASE_IMAGE AS secondary-image
 LABEL builder=false
 ARG HTTP_ASGI_APPLICATION_PATH=
+ARG ADDITIONAL_PACKAGES=
+ARG GITHUB_TOKEN=
+
+RUN echo "Additional packages: $(echo "$ADDITIONAL_PACKAGES" | sed "s/\$GITHUB_TOKEN/$GITHUB_TOKEN/g")"
+RUN [ -n "$ADDITIONAL_PACKAGES" ] && \
+    echo "$ADDITIONAL_PACKAGES" | sed "s/\$GITHUB_TOKEN/$GITHUB_TOKEN/g" > additional-packages.txt && \
+    pip install -r additional-packages.txt
 
 RUN apt-get update \
   && apt-get install -y wget ffmpeg \

@@ -17,6 +17,13 @@ RUN apt-get update && apt-get install -y git
 RUN pdm config python.use_venv False && \
     pdm sync --prod --group :all --no-isolation
 
+RUN apt-get update && apt-get install -y git
+
+RUN echo "Additional packages: $(echo "$ADDITIONAL_PACKAGES" | sed "s/\$GITHUB_TOKEN/$GITHUB_TOKEN/g")"
+RUN [ -n "$ADDITIONAL_PACKAGES" ] && \
+    echo "$ADDITIONAL_PACKAGES" | sed "s/\$GITHUB_TOKEN/$GITHUB_TOKEN/g" > additional-packages.txt && \
+    pip install -r additional-packages.txt
+
 
 
 RUN mkdir -p /opt/ && mv __pypackages__/3.11/ /opt/pypackages/

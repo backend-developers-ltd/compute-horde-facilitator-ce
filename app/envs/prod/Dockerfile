@@ -36,6 +36,8 @@ ARG HTTP_ASGI_APPLICATION_PATH=
 ARG ADDITIONAL_PACKAGES=
 ARG GITHUB_TOKEN=
 
+RUN apt-get update && apt-get install -y git
+
 RUN echo "Additional packages: $(echo "$ADDITIONAL_PACKAGES" | sed "s/\$GITHUB_TOKEN/$GITHUB_TOKEN/g")"
 RUN [ -n "$ADDITIONAL_PACKAGES" ] && \
     echo "$ADDITIONAL_PACKAGES" | sed "s/\$GITHUB_TOKEN/$GITHUB_TOKEN/g" > additional-packages.txt && \

@@ -55,7 +55,7 @@ jobs:
           export HTTP_ASGI_APPLICATION_PATH="${{ vars.HTTP_ASGI_APPLICATION_PATH }}"
           [ -n "$ADDITIONAL_PACKAGES" ] && echo "$ADDITIONAL_PACKAGES" | sed "s/\$GITHUB_TOKEN/$GITHUB_TOKEN/g" > additional-packages.txt
           echo "Additional packages: $(cat additional-packages.txt)"
-          while IFS= read -r package; do pdm add "$package"; done < additional-packages.txt || true
+          pip install -r additional-packages.txt
       - name: Run dockerized services
         run: docker compose up -d --wait
       - name: Run migrations

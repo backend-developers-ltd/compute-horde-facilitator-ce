@@ -213,5 +213,5 @@ async def test__websocket__disconnect_validator_if_become_inactive(
         mp.setattr(bittensor, "metagraph", MockedMetagraph)
         await sync_to_async(sync_metagraph)()
 
-    assert not await Channel.objects.filter(validator=validator).aexists()
     assert (await communicator.receive_output())["type"] == "websocket.close"
+    assert not await Channel.objects.filter(validator=validator).aexists()

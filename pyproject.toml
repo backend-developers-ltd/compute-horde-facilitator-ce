@@ -4,7 +4,7 @@ requires-python = "==3.11.*"
 version = "0.1.0"
 dependencies = [
     "Django~=4.2.4",
-    "django-constance[database]==3.1.0",
+    "django-constance==3.1.0",
     "django-cors-headers~=4.2.0",
     "django-environ~=0.11.2",
     "django-extensions==3.2.3",
@@ -49,23 +49,27 @@ dependencies = [
 ]
 description = "Compute Horde app facilitating interaction between end users and Validators"
 authors = [{name = "Backend Developers LTD"}]
-readme = "README.md"
 license = {text = "Custom"}
 
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cpu" },
+]
+
+[tool.uv]
+prerelease = "allow"
+environments = ["sys_platform == 'linux'", "sys_platform == 'darwin'"]
+
 [build-system]
-requires = ["pdm-backend"]  # Replace with the version you need
+requires = ["pdm-backend==2.4.3"]
 build-backend = "pdm.backend"
 
-[tool.pdm]
-distribution = false
-
-[[tool.pdm.source]]
-name = "torch"
-url = "https://download.pytorch.org/whl/cpu"
-include_packages = ["torch"]
-exclude_packages = ["*"]
-
-[tool.pdm.dev-dependencies]
+[dependency-groups]
 test = [
     "pytest",
     "pytest-django",
@@ -74,6 +78,9 @@ test = [
     "freezegun",
     "pytest-asyncio>=0.23.5",
     "responses>=0.25.0",
+]
+format = [
+    "ruff",
 ]
 lint = [
     "ruff",
@@ -117,5 +124,5 @@ ignore = [
 "test/**" = ["D", "F403", "F405"]
 
 [tool.codespell]
-skip = "*.min.js,pdm.lock,*.aof"
+skip = "*.min.js,uv.lock,*.aof"
 ignore-words-list = "datas,acount"

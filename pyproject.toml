@@ -49,7 +49,6 @@ dependencies = [
 ]
 description = "Compute Horde app facilitating interaction between end users and Validators"
 authors = [{name = "Backend Developers LTD"}]
-readme = "README.md"
 license = {text = "Custom"}
 
 [[tool.uv.index]]

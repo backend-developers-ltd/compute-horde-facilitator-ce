@@ -21,8 +21,13 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_DEFAULT_VERSION }}
           cache: "pip"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+          enable-cache: true
       - name: Install dependencies
-        run: python -m pip install --upgrade nox pdm==2.19.3
+        run: python -m pip install --upgrade nox
       - name: Run linters
         run: nox -vs lint
   test:
@@ -43,8 +48,13 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_DEFAULT_VERSION }}
           cache: "pip"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+          enable-cache: true
       - name: Install dependencies
-        run: python -m pip install --upgrade nox pdm==2.19.3
+        run: python -m pip install --upgrade nox
       - name: Prepare environment
         run: ./setup-dev.sh
       - name: Install additional packages
@@ -55,11 +65,11 @@ jobs:
           export HTTP_ASGI_APPLICATION_PATH="${{ vars.HTTP_ASGI_APPLICATION_PATH }}"
           [ -n "$ADDITIONAL_PACKAGES" ] && echo "$ADDITIONAL_PACKAGES" | sed "s/\$GITHUB_TOKEN/$GITHUB_TOKEN/g" > additional-packages.txt
           echo "Additional packages: $(cat additional-packages.txt)"
-          pip install -r additional-packages.txt
+          uv pip install -r additional-packages.txt
       - name: Run dockerized services
         run: docker compose up -d --wait
       - name: Run migrations
-        run: cd app/src && pdm run python manage.py wait_for_database --timeout 120 && pdm run python manage.py migrate
+        run: cd app/src && uv run python manage.py wait_for_database --timeout 120 && uv run python manage.py migrate
       - name: Run unit tests
         run: nox -vs test
       - name: Stop dockerized services

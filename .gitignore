@@ -18,4 +18,3 @@ media/
 .terraform/
 .nox/
 __pycache__
-.pdm-python

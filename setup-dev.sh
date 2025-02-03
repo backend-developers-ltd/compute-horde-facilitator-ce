@@ -7,8 +7,8 @@ ENV_DIR="./envs/dev"
 cd "${PROJECT_DIR}"
 
 # Create a lock file, install Python dependencies
-[ -f pdm.lock ] || pdm lock --group :all
-pdm sync --group :all --no-isolation
+[ -f uv.lock ] || uv lock
+uv sync --all-groups
 
 # Create .env from the template if doesn't exist
 [[ -f "${ENV_DIR}/.env" ]] || cp "${ENV_DIR}/.env.template" "${ENV_DIR}/.env"

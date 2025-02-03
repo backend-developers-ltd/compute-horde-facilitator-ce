@@ -15,7 +15,7 @@ MuliVolumeAllowedVolume = Annotated[
 
 class MinerResponse(BaseModel, extra=Extra.allow):
     job_uuid: str
-    message_type: str
+    message_type: str | None
     docker_process_stderr: str
     docker_process_stdout: str
 

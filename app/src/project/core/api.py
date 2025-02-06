@@ -1,6 +1,5 @@
 import django_filters
 from compute_horde.base.output_upload import SingleFileUpload
-from constance import config
 from django.core.exceptions import ObjectDoesNotExist
 from django_filters import fields
 from django_filters.rest_framework import DjangoFilterBackend
@@ -13,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from structlog import get_logger
 
 from .middleware.signature_middleware import require_signature
-from .models import Job, JobFeedback
+from .models import Job, JobCreationDisabledError, JobFeedback
 from .schemas import MuliVolumeAllowedVolume
 from .utils import safe_config
 
@@ -145,11 +144,10 @@ class BaseCreateJobViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Job.objects.with_statuses()
 
     def perform_create(self, serializer):
-        if not config.ENABLE_ORGANIC_JOBS:
-            raise ValidationError("Job creation is disabled at this moment")
-
         try:
             serializer.save(user=self.request.user, signature=self.request.signature)
+        except JobCreationDisabledError as exc:
+            raise ValidationError("Job creation is disabled at this moment") from exc
         except ObjectDoesNotExist as exc:
             model_name = exc.__class__.__qualname__.partition(".")[0]
             raise ValidationError(f"Could not select {model_name}")

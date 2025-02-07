@@ -56,6 +56,10 @@ class JobNotFinishedError(Exception):
     pass
 
 
+class JobCreationDisabledError(Exception):
+    pass
+
+
 # TODO: deprecate this model
 class SignatureInfo(models.Model):
     """
@@ -252,6 +256,8 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
         with transaction.atomic(), bound_contextvars(job=self):
             self.validator = getattr(self, "validator", None) or self.select_validator()
             if self.target_validator_hotkey is None:
+                if not safe_config.ENABLE_ORGANIC_JOBS:
+                    raise JobCreationDisabledError()
                 self.miner = getattr(self, "miner", None) or self.select_miner()
             else:
                 self.miner = None

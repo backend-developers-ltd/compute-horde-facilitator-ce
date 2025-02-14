@@ -1,16 +1,19 @@
 import django_filters
 from compute_horde.base.output_upload import SingleFileUpload
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import QuerySet
 from django_filters import fields
 from django_filters.rest_framework import DjangoFilterBackend
 from django_pydantic_field.rest_framework import SchemaField
 from rest_framework import mixins, routers, serializers, status, viewsets
+from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import APIException, ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import BasePermission, IsAuthenticated
 from structlog import get_logger
 
+from .authentication import HotkeyAuthentication
 from .middleware.signature_middleware import require_signature
 from .models import Job, JobCreationDisabledError, JobFeedback
 from .schemas import MuliVolumeAllowedVolume
@@ -143,12 +146,25 @@ class JobFeedbackSerializer(serializers.ModelSerializer):
         fields = ["result_correctness", "expected_duration"]
 
 
+class RequestHasHotkey(BasePermission):
+    def has_permission(self, request, view) -> bool:
+        return hasattr(request, "hotkey")
+
+
 class BaseCreateJobViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Job.objects.with_statuses()
+    permission_classes = (IsAuthenticated | RequestHasHotkey,)
+
+    def get_authenticators(self) -> list[BaseAuthentication]:
+        return super().get_authenticators() + [HotkeyAuthentication()]
 
     def perform_create(self, serializer):
         try:
-            serializer.save(user=self.request.user, signature=self.request.signature)
+            fields = {"hotkey": self.request.hotkey}
+        except AttributeError:
+            fields = {"user": self.request.user}
+        try:
+            serializer.save(**fields, signature=self.request.signature)
         except JobCreationDisabledError as exc:
             raise ValidationError("Job creation is disabled at this moment") from exc
         except ObjectDoesNotExist as exc:
@@ -176,13 +192,23 @@ class JobViewSetFilter(django_filters.FilterSet):
 class JobViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Job.objects.with_statuses()
     serializer_class = JobSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated | RequestHasHotkey,)
     pagination_class = DefaultModelPagination
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = (DjangoFilterBackend,)
     filterset_class = JobViewSetFilter
 
-    def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+    def get_authenticators(self) -> list[BaseAuthentication]:
+        authenticators = super().get_authenticators()
+        if self.detail:
+            authenticators.append(HotkeyAuthentication())
+        return authenticators
+
+    def get_queryset(self) -> QuerySet:
+        if hasattr(self.request, "hotkey"):  # noqa: SIM108
+            params = {"hotkey": self.request.hotkey}
+        else:
+            params = {"user": self.request.user}
+        return self.queryset.filter(**params)
 
 
 class RawJobViewset(BaseCreateJobViewSet):
@@ -195,7 +221,6 @@ class DockerJobViewset(BaseCreateJobViewSet):
 
 class JobFeedbackViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = JobFeedbackSerializer
-    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         job_uuid = self.kwargs["job_uuid"]

@@ -191,7 +191,8 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
     JOB_TIMEOUT: ClassVar = timedelta(minutes=5, seconds=30)
 
     uuid = models.UUIDField(primary_key=True, editable=False, blank=True)
-    user = models.ForeignKey("auth.User", on_delete=models.PROTECT, related_name="jobs")
+    user = models.ForeignKey("auth.User", on_delete=models.PROTECT, blank=True, null=True, related_name="jobs")
+    hotkey = models.CharField(blank=True, help_text="hotkey of job sender if hotkey authentication was used")
     validator = models.ForeignKey(Validator, blank=True, on_delete=models.PROTECT, related_name="jobs")
     miner = models.ForeignKey(Miner, blank=True, null=True, on_delete=models.PROTECT, related_name="jobs")
     signature_info = models.ForeignKey(
@@ -232,12 +233,17 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
     class Meta:
         constraints = [
             CheckConstraint(
-                check=(Q(docker_image="") & ~Q(raw_script="") | ~Q(docker_image="") & Q(raw_script="")),
+                check=Q(user__isnull=True) & ~Q(hotkey="") | Q(user__isnull=False) & Q(hotkey=""),
+                name="user_or_hotkey",
+            ),
+            CheckConstraint(
+                check=Q(docker_image="") & ~Q(raw_script="") | ~Q(docker_image="") & Q(raw_script=""),
                 name="docker_image_or_raw_script",
             ),
         ]
         indexes = [
             models.Index(fields=["validator", "-created_at"], name="idx_job_validator_created_at"),
+            models.Index(fields=["hotkey"], name="idx_job_hotkey"),
         ]
 
     @property
@@ -294,6 +300,9 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
 
         # use user's preferences to select specific validators
         with suppress(UserPreferences.DoesNotExist):
+            if not self.user:
+                raise UserPreferences.DoesNotExist
+
             exclusive_preference = self.user.preferences.exclusive
             if preferred_validator_ids := set(self.user.preferences.validators.values_list("id", flat=True)):
                 # we either select one of preferred validators, but if none of them is available - select any
@@ -353,6 +362,9 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
 
         # use user's preferences to select specific miners
         with suppress(UserPreferences.DoesNotExist):
+            if not self.user:
+                raise UserPreferences.DoesNotExist
+
             exclusive_preference = self.user.preferences.exclusive
             if preferred_miners := self.user.preferences.miners.all():
                 # we either select one of preferred miners, but if none of them is available - select any
@@ -388,8 +400,12 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
             raise MutuallyExclusiveFieldsError("Either docker_image or raw_script should be provided, but not both")
         return super().clean(*args, **kwargs)
 
+    @property
+    def sender(self) -> str:
+        return self.hotkey or self.user.username
+
     def __str__(self) -> str:
-        return f"Job {self.pk} by {self.user.username}"
+        return f"Job {self.pk} by {self.sender}"
 
     def get_absolute_url(self) -> str:
         return reverse("job/detail", kwargs={"pk": self.pk})

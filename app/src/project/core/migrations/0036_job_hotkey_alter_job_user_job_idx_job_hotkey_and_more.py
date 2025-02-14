@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ("core", "0034_jobfeedback_signature_and_more"),
+        ("core", "0035_job_artifacts_job_artifacts_dir"),
     ]
 
     operations = [

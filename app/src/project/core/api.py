@@ -61,6 +61,8 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
             "stdout",
             "volumes",
             "uploads",
+            "artifacts",
+            "artifacts_dir",
             "target_validator_hotkey",
         )
         read_only_fields = (
@@ -127,6 +129,7 @@ class DockerJobSerializer(DynamicJobFields, JobSerializer):
                 "volumes",
                 "uploads",
                 "target_validator_hotkey",
+                "artifacts_dir",
             }
         )
 

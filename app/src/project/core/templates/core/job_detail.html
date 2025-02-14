@@ -41,6 +41,12 @@
                 {% endif %}
             </td>
         </tr>
+        {% if job.artifacts_dir %}
+            <tr>
+                <th>Artifacts dir</th>
+                <td>{{ job.artifacts_dir }}</td>
+            </tr>
+        {% endif %}
         <tr>
             <td colspan="2" class="bg-secondary">
             </td>

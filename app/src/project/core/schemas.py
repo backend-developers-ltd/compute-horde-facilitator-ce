@@ -18,6 +18,7 @@ class MinerResponse(BaseModel, extra=Extra.allow):
     message_type: str | None
     docker_process_stderr: str
     docker_process_stdout: str
+    artifacts: dict[str, str] | None
 
 
 class JobStatusMetadata(BaseModel, extra=Extra.allow):

@@ -136,6 +136,7 @@ def job_status_update(job):
                 message_type="some-type",
                 docker_process_stderr="some stderr",
                 docker_process_stdout="some stdout",
+                artifacts={},
             ),
         ),
     )

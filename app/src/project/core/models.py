@@ -222,6 +222,8 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
     target_validator_hotkey = models.TextField(blank=True, default=None, null=True, help_text="target validator")
     volumes = SchemaField(schema=list[MuliVolumeAllowedVolume], blank=True, default=list)
     uploads = SchemaField(schema=list[SingleFileUpload], blank=True, default=list)
+    artifacts_dir = models.CharField(max_length=255, blank=True, help_text="image mount directory for artifacts")
+    artifacts = models.JSONField(blank=True, default=dict)
 
     tag = models.CharField(max_length=255, blank=True, default="", help_text="may be used to group jobs")
 
@@ -471,6 +473,7 @@ class Job(ExportModelOperationsMixin("job"), models.Model):
                     volume=volume,
                     output_upload=output_upload,
                     signature=signature,
+                    artifacts_dir=self.artifacts_dir or None,
                 )
             else:
                 assert self.miner is not None

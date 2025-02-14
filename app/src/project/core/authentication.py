@@ -7,8 +7,11 @@ from django.contrib.auth.models import AbstractBaseUser, AnonymousUser
 from django.http import HttpRequest
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
+from structlog import get_logger
 
 from .models import Miner, Validator
+
+log = get_logger(__name__)
 
 
 class HotkeyAuthentication(BaseAuthentication):
@@ -56,7 +59,8 @@ class HotkeyAuthentication(BaseAuthentication):
                 data=data_to_sign.encode(), signature=bytes.fromhex(signature)
             )
         except Exception as exc:
-            raise AuthenticationFailed(f"Signature verification failed: {exc}") from exc
+            log.warning("Signature verification failed", exc=exc)
+            raise AuthenticationFailed("Signature verification failed") from exc
 
         if not is_valid:
             raise AuthenticationFailed("Invalid signature.")

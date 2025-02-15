@@ -5,6 +5,7 @@ import pytest
 import pytest_asyncio
 import responses
 from bittensor import Keypair
+from bittensor_wallet import Wallet
 from channels.testing import WebsocketCommunicator
 from compute_horde.fv_protocol.validator_requests import V0AuthenticationRequest
 from django.conf import settings
@@ -41,6 +42,18 @@ def keypair():
 def public_key(keypair):
     assert keypair.public_key
     return keypair.public_key
+
+
+@pytest.fixture
+def wallet():
+    wallet = Wallet(name="test-wallet")
+    wallet.create_if_non_existent(
+        coldkey_use_password=False,
+        hotkey_use_password=False,
+        save_coldkey_to_env=False,
+        save_hotkey_to_env=False,
+    )
+    return wallet
 
 
 @pytest.fixture
@@ -114,6 +127,14 @@ def job(db, user, validator, miner, dummy_job_params):
         miner=miner,
         **dummy_job_params,
     )
+
+
+@pytest.fixture
+def job_with_hotkey(job, wallet):
+    job.user = None
+    job.hotkey = wallet.hotkey.ss58_address
+    job.save()
+    return job
 
 
 @pytest_asyncio.fixture

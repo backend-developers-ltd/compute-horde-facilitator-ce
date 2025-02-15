@@ -159,6 +159,7 @@ CONSTANCE_CONFIG = {
 
 BITTENSOR_NETUID = env("BITTENSOR_NETUID")
 BITTENSOR_NETWORK = env("BITTENSOR_NETWORK")
+SIGNATURE_EXPIRE_DURATION = env("SIGNATURE_EXPIRE_DURATION", default="300")
 
 R2_ENDPOINT_URL = env("R2_ENDPOINT_URL")
 R2_ACCESS_KEY_ID = env("R2_ACCESS_KEY_ID")  # https://developers.cloudflare.com/r2/api/s3/tokens/
@@ -419,6 +420,9 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
         "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
     ],
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",

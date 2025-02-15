@@ -1,14 +1,16 @@
 import base64
+import json
 import time
 from unittest.mock import patch
 
 import pytest
+from bittensor_wallet import Wallet
 from compute_horde.fv_protocol.facilitator_requests import Signature
 from django.contrib.auth.models import User
 from rest_framework.exceptions import ErrorDetail
 from rest_framework.test import APIClient
 
-from project.core.models import Job, JobFeedback
+from project.core.models import Job, JobFeedback, Validator
 
 
 @pytest.fixture
@@ -184,6 +186,114 @@ def test_docker_job_viewset_create(api_client, user, connected_validator, miner)
     assert job.env == {"MY_ENV": "my value"}
     assert job.use_gpu is True
     assert job.user == user
+
+
+def generate_signed_headers(
+    wallet: Wallet,
+    url: str,
+    subnet_id: int,
+    method: str = "POST",
+    subnet_chain: str = "mainnet",
+) -> dict:
+    headers = {
+        "Realm": subnet_chain,
+        "SubnetID": str(subnet_id),
+        "Nonce": str(time.time()),
+        "Hotkey": wallet.hotkey.ss58_address,
+    }
+
+    headers_str = json.dumps(headers, sort_keys=True)
+    data_to_sign = f"{method}{url}{headers_str}".encode()
+    signature = wallet.hotkey.sign(
+        data_to_sign,
+    ).hex()
+    headers["Signature"] = signature
+
+    return headers
+
+
+@pytest.mark.django_db
+def test_hotkey_authentication__job_create(api_client, wallet, connected_validator, miner):
+    data = {"raw_script": "print(1)", "input_url": "http://example.com/input.zip"}
+    response = api_client.post("/api/v1/job-raw/", data)
+    assert response.status_code == 401
+
+    signed_headers = generate_signed_headers(
+        wallet=wallet,
+        url="http://testserver/api/v1/job-raw/",
+        method="POST",
+        subnet_id=12,
+    )
+
+    response = api_client.post(
+        "/api/v1/job-raw/",
+        data,
+        **{f"HTTP_{header.upper()}": value for header, value in signed_headers.items()},
+    )
+    assert response.status_code == 401
+
+    Validator.objects.create(ss58_address=wallet.hotkey.ss58_address, is_active=True)
+    response = api_client.post(
+        "/api/v1/job-raw/",
+        data,
+        **{f"HTTP_{header.upper()}": value for header, value in signed_headers.items()},
+    )
+    assert response.status_code == 201, response.content
+
+    assert Job.objects.count() == 1
+    job = Job.objects.first()
+    assert job.raw_script == "print(1)"
+    assert job.input_url == "http://example.com/input.zip"
+    assert job.use_gpu is False
+    assert job.user is None
+    assert job.hotkey == wallet.hotkey.ss58_address
+
+
+@pytest.mark.django_db
+def test_hotkey_authentication__job_details(api_client, wallet, job_with_hotkey):
+    # no authentication -> 401
+    response = api_client.get(f"/api/v1/jobs/{job_with_hotkey.uuid}/")
+    assert response.status_code == 401, response.content
+
+    signed_headers = generate_signed_headers(
+        wallet=wallet,
+        url=f"http://testserver/api/v1/jobs/{job_with_hotkey.uuid}/",
+        method="GET",
+        subnet_id=12,
+    )
+
+    # unknown hotkey -> 401
+    response = api_client.get(
+        f"/api/v1/jobs/{job_with_hotkey.uuid}/",
+        **{f"HTTP_{header.upper()}": value for header, value in signed_headers.items()},
+    )
+    assert response.status_code == 401, response.content
+
+    # known hotkey -> success
+    Validator.objects.create(ss58_address=wallet.hotkey.ss58_address, is_active=True)
+    response = api_client.get(
+        f"/api/v1/jobs/{job_with_hotkey.uuid}/",
+        **{f"HTTP_{header.upper()}": value for header, value in signed_headers.items()},
+    )
+    assert response.status_code == 200, response.content
+
+
+@pytest.mark.django_db
+def test_hotkey_authentication__job_list(api_client, wallet, job_with_hotkey):
+    # even if everything is valid, we don't allow listing jobs by hotkey
+    signed_headers = generate_signed_headers(
+        wallet=wallet,
+        url="http://testserver/api/v1/jobs/",
+        method="GET",
+        subnet_id=12,
+    )
+    Validator.objects.create(ss58_address=wallet.hotkey.ss58_address, is_active=True)
+
+    response = api_client.get(
+        "/api/v1/jobs/",
+        **{f"HTTP_{header.upper()}": value for header, value in signed_headers.items()},
+    )
+    assert response.status_code == 401, response.content
 
 
 def test_job_feedback__create__requires_signature(authenticated_api_client):

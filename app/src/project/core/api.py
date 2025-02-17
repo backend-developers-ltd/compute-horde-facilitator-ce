@@ -67,6 +67,7 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
             "artifacts",
             "artifacts_dir",
             "target_validator_hotkey",
+            "on_trusted_miner",
         )
         read_only_fields = (
             "created_at",

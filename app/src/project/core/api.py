@@ -221,6 +221,7 @@ class DockerJobViewset(BaseCreateJobViewSet):
 
 class JobFeedbackViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = JobFeedbackSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         job_uuid = self.kwargs["job_uuid"]

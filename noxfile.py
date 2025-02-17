@@ -34,6 +34,9 @@ def install(session: nox.Session, *args):
         env={"UV_PROJECT_ENVIRONMENT": uv_env},
     )
 
+    if ch_local := os.getenv("COMPUTE_HORDE_LOCAL"):
+        session.run_install("uv", "pip", "install", ch_local, env={"UV_PROJECT_ENVIRONMENT": uv_env})
+
 
 @functools.lru_cache
 def _list_files() -> list[Path]:

@@ -189,11 +189,20 @@ class ValidatorConsumer(AsyncWebsocketConsumer):
                 return
 
             try:
-                job = await JobStatus.objects.acreate(
+                status = JobStatus.Status[message.status.upper()]
+                await JobStatus.objects.acreate(
                     job=job,
-                    status=JobStatus.Status[message.status.upper()],
+                    status=status,
                     metadata=message.metadata.dict(),
                 )
+                if (
+                    status == JobStatus.Status.COMPLETED
+                    and (miner_response := message.metadata.miner_response) is not None
+                    and (artifacts := miner_response.artifacts) is not None
+                ):
+                    job.artifacts = artifacts
+                    await job.asave()
+
             except IntegrityError as exc:
                 log.debug("job status update failed", exc=exc)
                 response = Response(

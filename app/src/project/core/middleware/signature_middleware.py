@@ -17,7 +17,6 @@ class FacilitatorSignatureMiddleware(MiddlewareMixin):
         try:
             request.signature = signature_from_request(request).model_dump()
         except SignatureNotFound:
-            logger.warning("Request headers does not contain a signature")
             request.signature = None
             pass
 

@@ -1,4 +1,6 @@
 import django_filters
+from rest_framework.response import Response
+import json
 from compute_horde.base.output_upload import SingleFileUpload
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import QuerySet
@@ -219,6 +221,15 @@ class DockerJobViewset(BaseCreateJobViewSet):
     serializer_class = DockerJobSerializer
 
 
+# should fetch job and mark it as cheated
+class CheatedJobViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    def create(self, request, *args, **kwargs):
+        job_uuid = json.loads(request.body).get("job_uuid")
+        job = Job.objects.get(uuid=job_uuid)
+        job.report_cheated()
+        return Response(status=status.HTTP_200_OK)
+
+
 class JobFeedbackViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = JobFeedbackSerializer
     permission_classes = (IsAuthenticated,)
@@ -270,3 +281,4 @@ router.register(r"jobs", JobViewSet)
 router.register(r"job-docker", DockerJobViewset, basename="job_docker")
 router.register(r"job-raw", RawJobViewset, basename="job_raw")
 router.register(r"jobs/(?P<job_uuid>[^/.]+)/feedback", JobFeedbackViewSet, basename="job_feedback")
+router.register(r"cheated-job", CheatedJobViewSet, basename="cheated_job")

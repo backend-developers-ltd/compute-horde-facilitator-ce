@@ -115,6 +115,10 @@ ignore = [
     "E501", # TODO: remove E501 once docstrings are formatted
 ]
 
+[tool.setuptools.packages.find]
+where = ["."]  # Look in the root directory
+include = ["app", "envs", "nginx", "devops", "promtail"]  # Explicitly include these packages
+
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "test/**" = ["D", "F403", "F405"]

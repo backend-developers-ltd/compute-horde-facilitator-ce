@@ -3,13 +3,14 @@ from typing import Annotated, Literal
 
 from compute_horde.base.volume import (
     HuggingfaceVolume,
+    InlineVolume,
     SingleFileVolume,
     ZipUrlVolume,
 )
 from pydantic import BaseModel, Extra, Field, field_validator
 
 MuliVolumeAllowedVolume = Annotated[
-    ZipUrlVolume | SingleFileVolume | HuggingfaceVolume, Field(discriminator="volume_type")
+    InlineVolume | ZipUrlVolume | SingleFileVolume | HuggingfaceVolume, Field(discriminator="volume_type")
 ]
 
 

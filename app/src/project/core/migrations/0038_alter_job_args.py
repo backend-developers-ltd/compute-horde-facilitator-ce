@@ -4,12 +4,20 @@ import django.contrib.postgres.fields
 from django.db import migrations, models
 
 
+def delete_jobs(apps, schema_editor):
+    Job = apps.get_model("core", "Job")
+    Job.objects.all().delete()
+
+
 class Migration(migrations.Migration):
+    atomic = False
+
     dependencies = [
         ("core", "0037_alter_job_volumes"),
     ]
 
     operations = [
+        migrations.RunPython(delete_jobs),
         migrations.AlterField(
             model_name="job",
             name="args",

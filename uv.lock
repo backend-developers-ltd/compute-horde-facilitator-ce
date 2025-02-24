@@ -90,7 +90,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "idna", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "sniffio", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "typing-extensions", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "typing-extensions", marker = "(sys_platform == 'darwin' and python_full_version == '3.11.*') or (sys_platform == 'linux' and python_full_version == '3.11.*')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a3/73/199a98fc2dae33535d6b8e8e6ec01f8c1d76c9adb096c6b7d64823038cde/anyio-4.8.0.tar.gz", hash = "sha256:1d9fe889df5212298c0c0723fa20479d1b94883a2df44bd3897aa91083316f7a", size = 181126 }
 wheels = [
@@ -147,12 +147,39 @@ wheels = [
 ]
 
 [[package]]
+name = "async-substrate-interface"
+version = "1.0.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "asyncstdlib", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "bittensor-wallet", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "bt-decode", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "scalecodec", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "websockets", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "wheel", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "xxhash", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/da/d7/71421a4f2ecb82a0141e61dab83770c0f9b2257543ad09f8a7eb4ed3017e/async_substrate_interface-1.0.3.tar.gz", hash = "sha256:da944b42aad508a6681a58b3223801013fbabc2f3d63c1e599eada4ecb53a2e9", size = 61528 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5d/a9/6c36e68b0b7cce2ff2a35a3a76c19e0dd2a1a6dedcf72189f6dd52b5d4a3/async_substrate_interface-1.0.3-py3-none-any.whl", hash = "sha256:d51db230fa0c0de6f9960089faad806da773c7500727096a2659c0fd398edc92", size = 64397 },
+]
+
+[[package]]
 name = "async-timeout"
 version = "5.0.1"
 source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/a5/ae/136395dfbfe00dfc94da3f3e136d0b13f394cba8f4841120e34226265780/async_timeout-5.0.1.tar.gz", hash = "sha256:d9321a7a3d5a6a5e187e824d2fa0793ce379a202935782d555d6e9d2735677d3", size = 9274 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/fe/ba/e2081de779ca30d473f21f5b30e0e737c438205440784c7dfc81efc2b029/async_timeout-5.0.1-py3-none-any.whl", hash = "sha256:39e3809566ff85354557ec2398b55e096c8364bacac9405a7a1fa429e77fe76c", size = 6233 },
+]
+
+[[package]]
+name = "asyncstdlib"
+version = "3.13.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/9b/5e/15e50af11110c3256f8d328f8681dcf404f2803e89a3d1dd3ab1b9be2427/asyncstdlib-3.13.0.tar.gz", hash = "sha256:f2a6ffb44f118233bb99bef50861d6f64c432decbdcc4c2cb93b3fff40d1b533", size = 49688 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1e/59/6b16492aef217e0fa1fae0ad49cf65ed4aa56b3691919cceb21a2c901fc1/asyncstdlib-3.13.0-py3-none-any.whl", hash = "sha256:60e097c19e815f3c419a77426cf6c3653aebcb766544d631d5ce6128d0851ae8", size = 43928 },
 ]
 
 [[package]]
@@ -202,6 +229,7 @@ name = "bandit"
 version = "1.8.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "colorama", marker = "(platform_system == 'Windows' and sys_platform == 'darwin') or (platform_system == 'Windows' and sys_platform == 'linux')" },
     { name = "pyyaml", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "rich", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "stevedore", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
@@ -243,15 +271,15 @@ wheels = [
 
 [[package]]
 name = "bittensor"
-version = "8.3.1"
+version = "9.0.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "async-property", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "backoff", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "async-substrate-interface", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "asyncstdlib", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "bittensor-cli", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "bittensor-commit-reveal", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "bittensor-wallet", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "bt-decode", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "colorama", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "fastapi", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "msgpack-numpy-opentensor", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
@@ -270,51 +298,63 @@ dependencies = [
     { name = "rich", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "scalecodec", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "setuptools", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "substrate-interface", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "uvicorn", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "websockets", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "wheel", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/fe/7d/6c5de71e8c88c0349cdf6ea971b8f7ca9bd63bd9ba2862c32674b3dc1066/bittensor-8.3.1.tar.gz", hash = "sha256:7085baef06e098149006cbfea90960ca92acfdc9cf0307afb9fc716fe8abbee9", size = 203601 }
+sdist = { url = "https://files.pythonhosted.org/packages/57/b1/5b6157be24c4794c1d9da4e3b510d2e88f99b5c05a37451e6a64b7bb8ffd/bittensor-9.0.1.tar.gz", hash = "sha256:6d8845c55a6358f7341c47993933f2919b85a61c7189cac01fdf9d767c9be2fa", size = 223332 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7b/33/2c396248870f5076a1b85a41adcee7ceb525b60bad3651029b872432e168/bittensor-8.3.1-py3-none-any.whl", hash = "sha256:7dd16344532346a61e64aaa25e3dcbd2983a6ad93046f9df6136df01ad9a8344", size = 247187 },
+    { url = "https://files.pythonhosted.org/packages/c2/b7/eb3160752e5bf1af5ada2287e054d847a36d08abb082a243edff1d2a5ee9/bittensor-9.0.1-py3-none-any.whl", hash = "sha256:e1682370debd9b95e185cee16af4669e6a56525e473227ebbc6d1906cfe931ce", size = 264579 },
 ]
 
 [[package]]
 name = "bittensor-cli"
-version = "8.3.1"
+version = "9.0.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "async-property", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "async-substrate-interface", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "backoff", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "bittensor-wallet", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "bt-decode", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "fuzzywuzzy", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "gitpython", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "jinja2", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "netaddr", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "numpy", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "packaging", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "plotille", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "plotly", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "pycryptodome", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "pytest", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "python-levenshtein", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "pywry", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "pyyaml", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "rich", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "scalecodec", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "substrate-interface", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "typer", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "websockets", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "wheel", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/22/ac/7468124144fdea9bb7ad09d8f53eed868f1c06f87618b2466de937a110fd/bittensor-cli-8.3.1.tar.gz", hash = "sha256:b46d210c8c824e5c9306ef6fbba6ee3cea73596f0230d7ad1a3481c0f1fb5f61", size = 161301 }
+sdist = { url = "https://files.pythonhosted.org/packages/5b/0c/d989b460eb60d5f6a6623de718ef8ed1f1f823a963fe0a9acdd7602c2b44/bittensor-cli-9.0.2.tar.gz", hash = "sha256:a4d36add1804aa28024adc955ec9a98220d795c41f562258547aedac41bcdb15", size = 181335 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ae/db/16ca3b7441098b27ef79ee4585941564bc4c6fffa59bdd72302fa3adf81b/bittensor_cli-8.3.1-py3-none-any.whl", hash = "sha256:f9fa8b4db2132526e829a3d5475cc9aa6a69b1084ee31b8fca9955770ae0d17f", size = 171624 },
+    { url = "https://files.pythonhosted.org/packages/dc/f4/ae65370a053ce5a3503dbd7a16ff54a163b561f66a3b723963e7972066f6/bittensor_cli-9.0.2-py3-none-any.whl", hash = "sha256:459a16337eaea2b882a4f1ab600d269ce8485fe41bf426450e218b0865ba259e", size = 193769 },
+]
+
+[[package]]
+name = "bittensor-commit-reveal"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a7/97/2bb9e34f807b06d6faaaf765285eddedb5bd969ad97bd5f5f99d53f81934/bittensor_commit_reveal-0.2.0.tar.gz", hash = "sha256:d67bc49cb93b94136ae10af25a98ec29fe9a88b4ebefadd4f8504eebf63643c0", size = 23303 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a1/62/0e5c43350bff82be2f51fa301556c105a9e2ebfb5d3e68f3904553387581/bittensor_commit_reveal-0.2.0-cp311-cp311-macosx_10_12_x86_64.whl", hash = "sha256:fa0dfc1a891c07c9c042f5d2623805ca2a5b6a4ed113a52da40503c224440cc1", size = 493052 },
+    { url = "https://files.pythonhosted.org/packages/41/0c/e0067f879bec3eebc45a1d009da6dd1d743a964490a9b2275d927acc552d/bittensor_commit_reveal-0.2.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:2d691fbcaef5001470e3196d9e5be0d66f0f3ff76c6465efba5fde30bf665da6", size = 493893 },
+    { url = "https://files.pythonhosted.org/packages/1b/13/a1ae4ad83412cf9d3f9a40b40eb89a0280d725fc455fbbda5be38dc950e7/bittensor_commit_reveal-0.2.0-cp311-cp311-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:df3071b83ea4e95ee018aad8dc370fa24884be802e55c5ed706db541a201473f", size = 724796 },
+    { url = "https://files.pythonhosted.org/packages/65/da/7e0214131521d4cfbd343c1defc7737949d7470f9f8a6be8d498b50ac504/bittensor_commit_reveal-0.2.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f2e2bdb3ceb96df0ef722af3eb97e32504b45ce72e6defb1c4281a7147314600", size = 566005 },
 ]
 
 [[package]]
 name = "bittensor-wallet"
-version = "3.0.0"
+version = "3.0.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cryptography", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
@@ -325,12 +365,12 @@ dependencies = [
     { name = "rich", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "termcolor", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/51/79/324672b28f7b3ac58baadc92f9a1b9fa74b32c978a7adf3430233103b06f/bittensor_wallet-3.0.0.tar.gz", hash = "sha256:045561e1be2546965a4adecb1515f61c7953b262328809c71d1acdb3aeddc20f", size = 72409 }
+sdist = { url = "https://files.pythonhosted.org/packages/5d/dc/a0583fd044f93bd19c23253c245fa83bdd28f225f25e3a171c16f0b64f45/bittensor_wallet-3.0.4.tar.gz", hash = "sha256:f105239b7b290998dcc0b59260507aa69f6f287dbe2cb814e32b985fbe84e7a3", size = 73529 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/91/29/cec51f6bccbe1be4539dee87f6de4827bf8567f23a05cafa98a5bd7d02a5/bittensor_wallet-3.0.0-cp311-cp311-macosx_10_12_x86_64.whl", hash = "sha256:5f5e31cb89ba3479adbd3e297c8be0fd386adeed598b86f7efc59893f0e13713", size = 806945 },
-    { url = "https://files.pythonhosted.org/packages/f5/9e/89d120ff209039865186448e89bf5952e66edb0a190b0c99ec5d1e64a959/bittensor_wallet-3.0.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:1c74b9ee5ea0b19082508d53be61a4d20a8c470c75aa4a959e24a62b182ab021", size = 770792 },
-    { url = "https://files.pythonhosted.org/packages/48/2d/b618916cb187efe4172cc94f044a51e4c46f6eb8cbd121045089d37fd984/bittensor_wallet-3.0.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:92b8a4e901c0d288303b8d2cddc41ce4d01fc8508f5a76007bdfda3f83b5414e", size = 3165563 },
-    { url = "https://files.pythonhosted.org/packages/ea/bd/d1e673227cd39f2a39e18713ed9161941aa445d6ef3394e13a2e5679aeba/bittensor_wallet-3.0.0-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:d83ad623b3eed955e1f127f313e859a12a942ef53adaf99b0b0e9e521ae8537d", size = 2970392 },
+    { url = "https://files.pythonhosted.org/packages/d5/91/a81d48f98a264c7d00f3c533d6b5177395075393016e5ff96bcb6bb29a22/bittensor_wallet-3.0.4-cp311-cp311-macosx_10_12_x86_64.whl", hash = "sha256:f641077d97e4b54be21e83f38e2c3f43cb6a1ce843bae19e70eb72f9690a7f27", size = 822960 },
+    { url = "https://files.pythonhosted.org/packages/38/e8/326e9f57e754a9950aa38c0e100024d68813ad7b78cdf9cc74aeb87985f4/bittensor_wallet-3.0.4-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:8697bd31c4eaa57b441ffa6a015f1b2074dbece433ca29c748a11c2db7fc5a02", size = 771119 },
+    { url = "https://files.pythonhosted.org/packages/06/ff/0eb874165bad70d4140c9880e3bc93da3ff90c7edc7deb793069347d3681/bittensor_wallet-3.0.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9284d17649092b7976cc0e1edd35e603a2731de381dbb7c8d46d3ff3a9880e7f", size = 3166985 },
+    { url = "https://files.pythonhosted.org/packages/62/59/4764566284501b0c872c5ea2c3396d404cb0e0a682778dc143c2b994668d/bittensor_wallet-3.0.4-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:a3402e5bfd1b5312ad16c5ff6f88c964587a35ce3edc22915d2c22affffdb896", size = 2972920 },
 ]
 
 [[package]]
@@ -354,7 +394,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jmespath", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "python-dateutil", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "urllib3", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "urllib3", marker = "(sys_platform == 'darwin' and python_full_version == '3.11.*') or (sys_platform == 'linux' and python_full_version == '3.11.*')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/e3/93/d9188c30f4c3c674cd3ee893efc23fab748e311231b4c376972453f77316/botocore-1.36.7.tar.gz", hash = "sha256:9abc64bde5e7d8f814ea91d6fc0a8142511fc96427c19fe9209677c20a0c9e6e", size = 13481743 }
 wheels = [
@@ -363,25 +403,25 @@ wheels = [
 
 [[package]]
 name = "bt-decode"
-version = "0.2.0a0"
+version = "0.5.0a2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "toml", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/66/8e/55f585644a3a6989bfc34091c81fa503b70466565f0cf051b64a3c588749/bt_decode-0.2.0a0.tar.gz", hash = "sha256:13261e31870cdccdf5d20772ffcce5d603bd3d0a76d733b3c4d37f09bb75d170", size = 3491397 }
+sdist = { url = "https://files.pythonhosted.org/packages/db/32/d0ac8e0ffd62f7c3d274926573bfb51b9661367f183fcfee8431b8a4d6b3/bt_decode-0.5.0a2.tar.gz", hash = "sha256:f5f41dd6b7797d58deaed7aec92c651aab4b64f9a08d203543d654cd2ba0cef9", size = 1196580 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c2/0d/71e3b55be5ae1862d696c23d26a45c9e907ab3be4acb70bf5f73518c9345/bt_decode-0.2.0a0-cp311-cp311-macosx_10_12_x86_64.whl", hash = "sha256:0b392f97653e004b56bfcb13043ae7017e7d174682d942537b8716a8608a2738", size = 448124 },
-    { url = "https://files.pythonhosted.org/packages/9a/f7/5272f6a7c696a9d537d5d30f7c2247635e49bd53ebc087bd124d8107db27/bt_decode-0.2.0a0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:8e52863dc63fd9e29c72a6642123aef916bf4b815b391daea4b3a0933937089b", size = 439289 },
-    { url = "https://files.pythonhosted.org/packages/59/78/9c698873bc395e6866d3338526cfa204710d2f995ca86ce382228b8e142f/bt_decode-0.2.0a0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:f49e85d2f9deda9196b373725c9a46cecf5c7ff6a15fe3c0a07cad8149129c47", size = 510565 },
-    { url = "https://files.pythonhosted.org/packages/7a/25/f1287dfc5bfcbee0049d7a11677f0a0e2e5c68c0f03539a800dc196255d3/bt_decode-0.2.0a0-cp311-cp311-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:3d1d5edeb38cdd2d5ac7a6ade4bd18dc25663e5b58e98de51b0ba57671f64a68", size = 502255 },
-    { url = "https://files.pythonhosted.org/packages/69/0f/f039cc81f79bfcdbaa41b20555051b1f0fff0d047e28e7874646c0f7996e/bt_decode-0.2.0a0-cp311-cp311-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:6d8d689c485e86e3614fe1cf03565f68b71730d19a55e2a759491cb848c0d782", size = 551874 },
-    { url = "https://files.pythonhosted.org/packages/e9/32/0ae2b0d29cc2ac6ea1c265add6d809316381deac1ddbc5f713d6b360329f/bt_decode-0.2.0a0-cp311-cp311-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:87a19c4ff5bcf2fb66316ce5ac2a60934062cd555afc529dbd416b4b4bf42ed1", size = 586332 },
-    { url = "https://files.pythonhosted.org/packages/6f/9e/b5b642e2a2546329c43124f3056429418423de811e38ef1b7c502211188d/bt_decode-0.2.0a0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bf2f93104a8b4df22207bd4144f6803e930e5ea41de2129bfbdc7e90e7bb536c", size = 499907 },
-    { url = "https://files.pythonhosted.org/packages/b1/d4/d5912c4dab1e9ced786d6f58472a3df0202d8c7f8aa1ac8c0e4031774748/bt_decode-0.2.0a0-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:08be1a0ff7f6435cefa8eb45f235c17a57b5ea4422ab6f3e098ad9faf057d315", size = 537121 },
-    { url = "https://files.pythonhosted.org/packages/e3/23/76dcf8141dff2e7e438fb79337bf709cdd737c87fcfcce9a47e1c948390a/bt_decode-0.2.0a0-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:a946b1e037c7aa051ffef19ce3a69800b2cad5268ee43bc9f5ef15c5d89ef6d4", size = 687167 },
-    { url = "https://files.pythonhosted.org/packages/8e/7d/d36256481d29a9fb505679ea5b6fa8c5c6203d39b7bd0b54d1796fd1a724/bt_decode-0.2.0a0-cp311-cp311-musllinux_1_2_armv7l.whl", hash = "sha256:d6923ddcd23dc5aeeaa353b5e5e6a3b321de87f5ec5a86fcff30fbc0d31fc78f", size = 756876 },
-    { url = "https://files.pythonhosted.org/packages/08/2a/c5b4105420c6a5a6a5e32b600661a28cb1dc25ae26e736fd39ff10160177/bt_decode-0.2.0a0-cp311-cp311-musllinux_1_2_i686.whl", hash = "sha256:56229f220cde61ce3af05f4d6cde78b9ed32e9ca60817585bd791948197b8921", size = 691168 },
-    { url = "https://files.pythonhosted.org/packages/8d/ce/2fb910c42796f0fca6503caef080305cf37ce014c975b382c4084a1568fb/bt_decode-0.2.0a0-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:ee9adfd7dfa0dd171e4c8bace23787370db5b3c20dfe032275920c51d248fa1c", size = 666306 },
+    { url = "https://files.pythonhosted.org/packages/75/05/af22e36512932aeb245e40e20edceb81a46957b51406b78dbb4e2893cc0f/bt_decode-0.5.0a2-cp311-cp311-macosx_10_12_x86_64.whl", hash = "sha256:22b397f8efddf2476b84e6ef3f0bd1bd60b2afd4a391294e5b38dc71f481920c", size = 596151 },
+    { url = "https://files.pythonhosted.org/packages/a8/3b/729454a993e2c5d04fcd2695db68e1c2e1510a1805a55ad181c05ebef42a/bt_decode-0.5.0a2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:c4d8e3ca9c5110800f9bfe2e2630428c5587ecbc8ed70d63a736b24c7f256d18", size = 580219 },
+    { url = "https://files.pythonhosted.org/packages/5b/4b/0af121512daeb80f78349edfad814e9fd47ab063506d46b616d38795f266/bt_decode-0.5.0a2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4dfa5a24f83173e73502addc73b27670a0b87a21475913583eb381da9b1aff7d", size = 635758 },
+    { url = "https://files.pythonhosted.org/packages/cc/9e/1ed54b7010e5bca1d663f31cf2805fc6e29bc1c00d455d5b32f3dc0ed8cb/bt_decode-0.5.0a2-cp311-cp311-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:bde3fa530e276a41697f2a5d67fba1381e2a106af10f7332f1b26ace9a39e834", size = 635755 },
+    { url = "https://files.pythonhosted.org/packages/80/28/a7a5e1cca0474d16b1da0e2971307cfeabebbdaa747152334e375cbceb68/bt_decode-0.5.0a2-cp311-cp311-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:f2bde58b8aa30dd210882247a69d4aad04770afb1d08af007ff01e0ad9664409", size = 703220 },
+    { url = "https://files.pythonhosted.org/packages/6a/de/952bdfd797fdda24c584e826fd7f3db7f4ea3e1d60e240d04fa0864ff918/bt_decode-0.5.0a2-cp311-cp311-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:87d4cdf22b01e84fcfdd14df7b9cf9fac442c7db13d873aba3e1f47c35488d8b", size = 738828 },
+    { url = "https://files.pythonhosted.org/packages/49/7a/7e0cb9fb0ddd8c41ec0d1c1dce1f6154d98b08917d1c556d8146ec679069/bt_decode-0.5.0a2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:01af924e2d7896c8d3186f793a5f76521627b0fe56af76dd5a13233c97062595", size = 643459 },
+    { url = "https://files.pythonhosted.org/packages/70/2c/eb2299a9a0f304beb4dfd20fab7410d8f4ed54c66a1e925395347b375147/bt_decode-0.5.0a2-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:50078bb09e3e83f4216be60111cc4973cce7d9b17c303e16349bf36b9a298c97", size = 697522 },
+    { url = "https://files.pythonhosted.org/packages/9c/8b/afaa287b1231b8795358456dbf9f3581e7129ab922bfe2256b5b0a86fc99/bt_decode-0.5.0a2-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:b709cce8cbf5f08e520f94a7a0e70e0362c29bbb9a5f302b52dc34b221949ada", size = 807787 },
+    { url = "https://files.pythonhosted.org/packages/4a/10/137d4dbaf0810d28573580b3fd91dacf7bbe7b493ac3397126ae9b6951b7/bt_decode-0.5.0a2-cp311-cp311-musllinux_1_2_armv7l.whl", hash = "sha256:4e7f9ae95a5c215d38193fa7e752f6befaded371aa04b4aa6650a9cd902c9064", size = 887835 },
+    { url = "https://files.pythonhosted.org/packages/f2/1d/36a2311d111bba089cf4147891ef654345b66879af332b641d98cb6551dd/bt_decode-0.5.0a2-cp311-cp311-musllinux_1_2_i686.whl", hash = "sha256:1036baac9050bc7831146eb4596093fdb3d6566b03aaca92b5fce3016d97260d", size = 845923 },
+    { url = "https://files.pythonhosted.org/packages/f4/eb/088a23938d74e4dde9e0c9aa4e554b662677e1d5e38207baaf19261836aa/bt_decode-0.5.0a2-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:4e0fc3afadb7dccb1b69b57108197701aa520e1392510865b11a65c23fb2b6f8", size = 807877 },
 ]
 
 [[package]]
@@ -500,6 +540,9 @@ wheels = [
 name = "click"
 version = "8.1.8"
 source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "colorama", marker = "(platform_system == 'Windows' and sys_platform == 'darwin') or (platform_system == 'Windows' and sys_platform == 'linux')" },
+]
 sdist = { url = "https://files.pythonhosted.org/packages/b9/2e/0090cbf739cee7d23781ad4b89a9894a41538e4fcf4c31dcdd705b78eb8b/click-8.1.8.tar.gz", hash = "sha256:ed53c9d8990d83c2a27deae68e4ee337473f6330c040a31d4225c9574d16096a", size = 226593 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7e/d4/7ebdbd03970677812aac39c869717059dbb71a4cfc033ca6e5221787892c/click-8.1.8-py3-none-any.whl", hash = "sha256:63c132bbbed01578a06712a2d1f497bb62d9c1c0d329b7903a866228027263b2", size = 98188 },
@@ -562,7 +605,7 @@ wheels = [
 
 [[package]]
 name = "compute-horde"
-version = "0.0.22"
+version = "0.0.23"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
@@ -576,9 +619,9 @@ dependencies = [
     { name = "requests", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "websockets", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/84/a5/fcf9f895d6755bdea0f847867b13c3319ef054abdcaa09b835667103f774/compute_horde-0.0.22.tar.gz", hash = "sha256:0ce7fc89784308586c9b95eebede0f1f69260e303d7e25ba1137d9bb2777ef1b", size = 47253 }
+sdist = { url = "https://files.pythonhosted.org/packages/0f/a8/480a0912248c0dac43bd383514bad266ab76807250bfe52bf86960a6d7c1/compute_horde-0.0.23.tar.gz", hash = "sha256:5e2fb150d88125d1fa27de21846599bd3a3f98591c6d5126a1ef41a23a8a382d", size = 48153 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/34/03/7b0611793f85dd3b33b114f13aff5d5ea759bbe774d32534d8b3490fe094/compute_horde-0.0.22-py3-none-any.whl", hash = "sha256:c7c0e3c1c511f3da2ad28c211bf9348ca05b15e3e015e4c28f213bc1849db9f7", size = 50521 },
+    { url = "https://files.pythonhosted.org/packages/52/50/ffb2d51dbafde951656c3d2cdfec8c9a466a0bf44033cdbb13499e45dedb/compute_horde-0.0.23-py3-none-any.whl", hash = "sha256:44dd0fd43cd53f362336a0339a38cacb7f8398b3807ac386315fea27a6348128", size = 51349 },
 ]
 
 [[package]]
@@ -1008,37 +1051,12 @@ wheels = [
 ]
 
 [[package]]
-name = "ecdsa"
-version = "0.19.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "six", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/5e/d0/ec8ac1de7accdcf18cfe468653ef00afd2f609faf67c423efbd02491051b/ecdsa-0.19.0.tar.gz", hash = "sha256:60eaad1199659900dd0af521ed462b793bbdf867432b3948e87416ae4caf6bf8", size = 197791 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/00/e7/ed3243b30d1bec41675b6394a1daae46349dc2b855cb83be846a5a918238/ecdsa-0.19.0-py2.py3-none-any.whl", hash = "sha256:2cea9b88407fdac7bbeca0833b189e4c9c53f2ef1e1eaa29f6224dbc809b707a", size = 149266 },
-]
-
-[[package]]
 name = "eth-hash"
 version = "0.7.1"
 source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/ee/38/577b7bc9380ef9dff0f1dffefe0c9a1ded2385e7a06c306fd95afb6f9451/eth_hash-0.7.1.tar.gz", hash = "sha256:d2411a403a0b0a62e8247b4117932d900ffb4c8c64b15f92620547ca5ce46be5", size = 12227 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/eb/db/f8775490669d28aca24871c67dd56b3e72105cb3bcae9a4ec65dd70859b3/eth_hash-0.7.1-py3-none-any.whl", hash = "sha256:0fb1add2adf99ef28883fd6228eb447ef519ea72933535ad1a0b28c6f65f868a", size = 8028 },
-]
-
-[[package]]
-name = "eth-keys"
-version = "0.6.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "eth-typing", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "eth-utils", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/ac/72/96db2e3d27c64d3e4a6bf1397447d029e4268fd70b0f1ee4192d6e8d75cd/eth_keys-0.6.1.tar.gz", hash = "sha256:a43e263cbcabfd62fa769168efc6c27b1f5603040e4de22bb84d12567e4fd962", size = 30090 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/5f/67/c241c85e9cb9c4d8c14440dd82f7fbe39536592bf59c6b643004ac63eab2/eth_keys-0.6.1-py3-none-any.whl", hash = "sha256:7deae4cd56e862e099ec58b78176232b931c4ea5ecded2f50c7b1ccbc10c24cf", size = 21292 },
 ]
 
 [[package]]
@@ -1177,7 +1195,7 @@ requires-dist = [
     { name = "celery", specifier = "~=5.3.1" },
     { name = "channels", extras = ["daphne"], specifier = ">=4.0.0" },
     { name = "channels-redis", specifier = ">=4.2.0" },
-    { name = "compute-horde", specifier = "==0.0.22" },
+    { name = "compute-horde", specifier = "==0.0.23" },
     { name = "crispy-bootstrap5", specifier = ">=2024.2" },
     { name = "django", specifier = "~=4.2.4" },
     { name = "django-allauth", specifier = ">=0.61.1" },
@@ -1505,8 +1523,8 @@ name = "ipdb"
 version = "0.13.13"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "decorator", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "ipython", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "decorator", marker = "(sys_platform == 'darwin' and python_full_version == '3.11.*') or (sys_platform == 'linux' and python_full_version == '3.11.*')" },
+    { name = "ipython", marker = "(sys_platform == 'darwin' and python_full_version == '3.11.*') or (sys_platform == 'linux' and python_full_version == '3.11.*')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/3d/1b/7e07e7b752017f7693a0f4d41c13e5ca29ce8cbcfdcc1fd6c4ad8c0a27a0/ipdb-0.13.13.tar.gz", hash = "sha256:e3ac6018ef05126d442af680aad863006ec19d02290561ac88b8b1c0b0cfc726", size = 17042 }
 wheels = [
@@ -1526,7 +1544,7 @@ dependencies = [
     { name = "pygments", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "stack-data", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "traitlets", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "typing-extensions", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "typing-extensions", marker = "(sys_platform == 'darwin' and python_full_version == '3.11.*') or (sys_platform == 'linux' and python_full_version == '3.11.*')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/01/35/6f90fdddff7a08b7b715fccbd2427b5212c9525cd043d26fdc45bee0708d/ipython-8.31.0.tar.gz", hash = "sha256:b6a2274606bec6166405ff05e54932ed6e5cfecaca1fc05f2cacde7bb074d70b", size = 5501011 }
 wheels = [
@@ -1572,7 +1590,7 @@ version = "5.5.0rc2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "amqp", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "tzdata", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "tzdata", marker = "(sys_platform == 'darwin' and python_full_version == '3.11.*') or (sys_platform == 'linux' and python_full_version == '3.11.*')" },
     { name = "vine", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/94/64/cc39be8782edd463a7c6c7c2505fd67d15452d5f1a310981da5c6bdf2275/kombu-5.5.0rc2.tar.gz", hash = "sha256:f581f3b2945a46d5de540a8fde920e87725308cfed6bdeed6983fa4124879cd0", size = 458112 }
@@ -1761,6 +1779,15 @@ wheels = [
 ]
 
 [[package]]
+name = "narwhals"
+version = "1.27.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/5a/d6/1dadff863b95e4ec74eaba7979278e446699532136c74183a398778b1949/narwhals-1.27.1.tar.gz", hash = "sha256:68505d0cee1e6c00382ac8b65e922f8b694a11cbe482a057fa63139de8d0ea03", size = 251670 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ed/ea/dc14822a0a75e027562f081eb638417b1b7845e1e01dd85c5b6573ebf1b2/narwhals-1.27.1-py3-none-any.whl", hash = "sha256:71e4a126007886e3dd9d71d0d5921ebd2e8c1f9be9c405fe11850ece2b066c59", size = 308837 },
+]
+
+[[package]]
 name = "nest-asyncio"
 version = "1.6.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1817,6 +1844,85 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/ba/86/8767f3d54f6ae0165749f84648da9dcc8cd78ab65d415494962c86fac80f/numpy-2.0.2-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:9ea91dfb7c3d1c56a0e55657c0afb38cf1eeae4544c208dc465c3c9f3a7c09f9", size = 19937253 },
     { url = "https://files.pythonhosted.org/packages/df/87/f76450e6e1c14e5bb1eae6836478b1028e096fd02e85c1c37674606ab752/numpy-2.0.2-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:c1c9307701fec8f3f7a1e6711f9089c06e6284b3afbbcd259f7791282d660a15", size = 14414074 },
 ]
+
+[[package]]
+name = "nvidia-cublas-cu12"
+version = "12.4.5.8"
+source = { registry = "https://pypi.org/simple" }
+
+[[package]]
+name = "nvidia-cuda-cupti-cu12"
+version = "12.4.127"
+source = { registry = "https://pypi.org/simple" }
+
+[[package]]
+name = "nvidia-cuda-nvrtc-cu12"
+version = "12.4.127"
+source = { registry = "https://pypi.org/simple" }
+
+[[package]]
+name = "nvidia-cuda-runtime-cu12"
+version = "12.4.127"
+source = { registry = "https://pypi.org/simple" }
+
+[[package]]
+name = "nvidia-cudnn-cu12"
+version = "9.1.0.70"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "nvidia-cublas-cu12", marker = "sys_platform == 'darwin'" },
+]
+
+[[package]]
+name = "nvidia-cufft-cu12"
+version = "11.2.1.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "nvidia-nvjitlink-cu12", marker = "sys_platform == 'darwin'" },
+]
+
+[[package]]
+name = "nvidia-curand-cu12"
+version = "10.3.5.147"
+source = { registry = "https://pypi.org/simple" }
+
+[[package]]
+name = "nvidia-cusolver-cu12"
+version = "11.6.1.9"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "nvidia-cublas-cu12", marker = "sys_platform == 'darwin'" },
+    { name = "nvidia-cusparse-cu12", marker = "sys_platform == 'darwin'" },
+    { name = "nvidia-nvjitlink-cu12", marker = "sys_platform == 'darwin'" },
+]
+
+[[package]]
+name = "nvidia-cusparse-cu12"
+version = "12.3.1.170"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "nvidia-nvjitlink-cu12", marker = "sys_platform == 'darwin'" },
+]
+
+[[package]]
+name = "nvidia-cusparselt-cu12"
+version = "0.6.2"
+source = { registry = "https://pypi.org/simple" }
+
+[[package]]
+name = "nvidia-nccl-cu12"
+version = "2.21.5"
+source = { registry = "https://pypi.org/simple" }
+
+[[package]]
+name = "nvidia-nvjitlink-cu12"
+version = "12.4.127"
+source = { registry = "https://pypi.org/simple" }
+
+[[package]]
+name = "nvidia-nvtx-cu12"
+version = "12.4.127"
+source = { registry = "https://pypi.org/simple" }
 
 [[package]]
 name = "packaging"
@@ -1894,6 +2000,25 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/13/fc/128cc9cb8f03208bdbf93d3aa862e16d376844a14f9a0ce5cf4507372de4/platformdirs-4.3.6.tar.gz", hash = "sha256:357fb2acbc885b0419afd3ce3ed34564c13c9b95c89360cd9563f73aa5e2b907", size = 21302 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/3c/a6/bc1012356d8ece4d66dd75c4b9fc6c1f6650ddd5991e421177d9f8f671be/platformdirs-4.3.6-py3-none-any.whl", hash = "sha256:73e575e1408ab8103900836b97580d5307456908a03e92031bab39e4554cc3fb", size = 18439 },
+]
+
+[[package]]
+name = "plotille"
+version = "5.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/8a/73/3f342572f7f916e387e546cc502d6cad35e7162ba0bcde203669e15aa3af/plotille-5.0.0.tar.gz", hash = "sha256:99e5ca51a2e4c922ead3a3b0863cc2c6a9a4b3f701944589df10f42ce02ab3dc", size = 53392 }
+
+[[package]]
+name = "plotly"
+version = "6.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "narwhals", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "packaging", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9c/80/761c14012d6daf18e12b6d1e4f6b218e999bcceb694d7a9b180154f9e4db/plotly-6.0.0.tar.gz", hash = "sha256:c4aad38b8c3d65e4a5e7dd308b084143b9025c2cc9d5317fc1f1d30958db87d3", size = 8111782 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0e/77/a946f38b57fb88e736c71fbdd737a1aebd27b532bda0779c137f357cf5fc/plotly-6.0.0-py3-none-any.whl", hash = "sha256:f708871c3a9349a68791ff943a5781b1ec04de7769ea69068adcd9202e57653a", size = 14805949 },
 ]
 
 [[package]]
@@ -2036,44 +2161,6 @@ wheels = [
 ]
 
 [[package]]
-name = "py-ed25519-zebra-bindings"
-version = "1.2.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/22/51/c5f00db791472d4f6c14b383dca0da621db6b68b8c73bef46bf136cb1c93/py_ed25519_zebra_bindings-1.2.0.tar.gz", hash = "sha256:d9ec63d54b1801d5b5bdef0b3096ed94e2e1a7c870c937682afc7b8b25ffc2fc", size = 11851 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/5f/41/d98363e8d78919b2340a318f52d6d90f30d67af9e472fdafd30b7003dea5/py_ed25519_zebra_bindings-1.2.0-cp311-cp311-macosx_10_12_x86_64.whl", hash = "sha256:dbfe655442b73d49c1ac740f87a480cfee4c013fcb0ba2b639290b20f8dc9bb5", size = 293119 },
-    { url = "https://files.pythonhosted.org/packages/86/fa/be0fc2a0340325fd1f8b82f56bd9304d30e694639748a19ef749c8c5e9cf/py_ed25519_zebra_bindings-1.2.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:b03308c3eb2311b5d308c3df22dbf244073e4c014cda5da2609a562adb4121fc", size = 267743 },
-    { url = "https://files.pythonhosted.org/packages/a2/8c/9dfd6b0dec395edb8c8a5475552443320a3085db97f9c7d9332055ba8195/py_ed25519_zebra_bindings-1.2.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1828031f38f246d35c7c7b427c17a3525fc311c0402d3b32572510977b9d0f67", size = 297320 },
-    { url = "https://files.pythonhosted.org/packages/48/e7/9469f84d868227344240182df25cba274ec3f9d812fc243d27ed2c2ad356/py_ed25519_zebra_bindings-1.2.0-cp311-cp311-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:f88238cf167ba5681e74a556b1e6ce825cb157825ce40c7f757b7d02a7c47dfb", size = 324110 },
-    { url = "https://files.pythonhosted.org/packages/91/df/a010af828cb9b3c6864ec74a7d0c54130ef1f557ec0bdfab449881418e29/py_ed25519_zebra_bindings-1.2.0-cp311-cp311-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:2b25ca1596ae3be7e6ce6e78252ce7efa570000f9ba5b39cfe8dd10e79f73d50", size = 337742 },
-    { url = "https://files.pythonhosted.org/packages/82/73/78e57f453a88345d6481a3eeb96ef9f56b7a7c9ee68a7c577b4385c80405/py_ed25519_zebra_bindings-1.2.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:68a33b1d8af961d28831caf2d481879bb1592f700da79aa5613d845ae6b8153a", size = 318630 },
-    { url = "https://files.pythonhosted.org/packages/6a/e2/8b2df28a19e7f552429421c005ec7ae41bf1ed664915fed705f687442220/py_ed25519_zebra_bindings-1.2.0-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:41ee171c18852f6db4a86e68c4fbd622f5415f15c0ab9b40ac1fe66a8ddc3844", size = 337481 },
-    { url = "https://files.pythonhosted.org/packages/0d/f3/044b3f5a4c299b53d1beb9e33b3af223bbc6d43707e5acf7edf012b39ff7/py_ed25519_zebra_bindings-1.2.0-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:58623ff56bf1da2581a7d52507d9757ec3b03d49879fc8611646faf666bd0120", size = 474458 },
-    { url = "https://files.pythonhosted.org/packages/fe/7d/dff91ff74d992ba0d30e48fda51d715021249ba8f19ae0c5906e4870d6df/py_ed25519_zebra_bindings-1.2.0-cp311-cp311-musllinux_1_2_armv7l.whl", hash = "sha256:3fdd9cc305dd88562b9fe4d27762070bfdaa1e88647a1509a22fe252e17148d7", size = 586915 },
-    { url = "https://files.pythonhosted.org/packages/2e/b3/43d5466fab2025a4213f29242b42f1591cb1dea0ed25098f00809bb6bab2/py_ed25519_zebra_bindings-1.2.0-cp311-cp311-musllinux_1_2_i686.whl", hash = "sha256:911f068d15159798309dc1895ce156b1bca2f91e34446be3ac5f54f2d3418979", size = 516303 },
-    { url = "https://files.pythonhosted.org/packages/5b/7c/8d8b4bffc70ca69fd38b6ec7c61bcad94f2ad1e215b14ecf160de6876563/py_ed25519_zebra_bindings-1.2.0-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:9d0fc9c1afbf4b5ff0bc03accf5f07bf53971839eb373d1139eb3bb5a02b3bd0", size = 489278 },
-]
-
-[[package]]
-name = "py-sr25519-bindings"
-version = "0.2.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/65/55/e5c27d1387f6cb3a6bf7714e1e0c4a62edc3b006710e2d081e8bdfa4123f/py_sr25519_bindings-0.2.1.tar.gz", hash = "sha256:1b96d3dde43adcf86ab427a9fd72b2c6291dca36eb40747df631588c16f01c1a", size = 18439 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b7/e5/62067ff055a940bcbb02467f7fb63fd85a89cc12153f8c78199ce5c71fb9/py_sr25519_bindings-0.2.1-cp311-cp311-macosx_10_12_x86_64.whl", hash = "sha256:4941e6e0e180f7e72565043ed3ba7190455c9feaa2ab9ee6038904f2b4bb6c5b", size = 331203 },
-    { url = "https://files.pythonhosted.org/packages/0a/6c/48a6e1289012b4ab704ccec5315a7c1f1694909b5cc332a36ec87ab03608/py_sr25519_bindings-0.2.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:b63d7cf5bb4d9b986d7f7012c80b92be70311dc9b75862f7880e03b71a29543d", size = 306083 },
-    { url = "https://files.pythonhosted.org/packages/e6/da/b7ab72a15e950779edf376b344b6de43aacc7250e319ff23996ef96cda5b/py_sr25519_bindings-0.2.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b6752bf3b109446d99f3a368e3ba805812fc5bc09e52ef1c82f5a47e43b19973", size = 340172 },
-    { url = "https://files.pythonhosted.org/packages/15/7f/4defee54893a3947936f3b5b8b1fe8cb10bb6d01cf87240345f511636e8d/py_sr25519_bindings-0.2.1-cp311-cp311-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:0368dcdf5ec8d2bb9c13273c78c3c5b033211d37a70a2f1d2080f29a7d118340", size = 368044 },
-    { url = "https://files.pythonhosted.org/packages/44/a9/b6ddb161bb28f7da1b261d8e6d59d9669a15bdbfe8bfff0ff15f9a28f0a6/py_sr25519_bindings-0.2.1-cp311-cp311-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:2618b02b4a3babac07b8bb61fe9550f911f038bb079665682ca76b2e664e5258", size = 384053 },
-    { url = "https://files.pythonhosted.org/packages/7a/66/5d4c78ad9766cd46e5439e9fb84cb10bc47b9c4929c8ea99ee880f405f50/py_sr25519_bindings-0.2.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4ab1bc4dc524efefaecf3a85f4a0ff05c1ca9509d4d64056199984550f3c98b3", size = 365700 },
-    { url = "https://files.pythonhosted.org/packages/07/ef/f96d4e2472af62768ffd81df2170f643de87b0ab831e405a4572b9959379/py_sr25519_bindings-0.2.1-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:7ccdc89d5e3ae0dd163c8150ec76b6bb3291c1cec9746eb79e9544b3423f35f9", size = 385360 },
-    { url = "https://files.pythonhosted.org/packages/9e/91/ea5e750e5f2896412fcbbe32da3be8ffab50f4221df7fe3ab367c51a99ac/py_sr25519_bindings-0.2.1-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:ae6545c414cfa5d7207c9c77aaa576bb374982fb2105a7a9c2764afa5621f6d4", size = 523867 },
-    { url = "https://files.pythonhosted.org/packages/7c/d0/e56f6753b264dd4c3f40364879429af7127c8b235c7a2f6d5fbb69137004/py_sr25519_bindings-0.2.1-cp311-cp311-musllinux_1_2_armv7l.whl", hash = "sha256:7046774e39e0166d3c12632969c9d1713e6ad9ca8206bbe82923ba6935b0a01f", size = 627828 },
-    { url = "https://files.pythonhosted.org/packages/63/19/7a8d5cca0a498da55b0457be98f03e428e4981b563e5d1c8c92dfc7d136e/py_sr25519_bindings-0.2.1-cp311-cp311-musllinux_1_2_i686.whl", hash = "sha256:cba9a8821176895b080ea761e5ab9cd8727660bf401478a6532a30ae3429573d", size = 551658 },
-    { url = "https://files.pythonhosted.org/packages/58/4e/083694bded9ce2d8d598f086aa4ca67f2b9c5d9bfd79ca46f04c95e9322b/py_sr25519_bindings-0.2.1-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:c31aba05819e5b6b26746dc1b078cf680bd471f135c55e376e95c7774e22e936", size = 529627 },
-]
-
-[[package]]
 name = "pyasn1"
 version = "0.6.1"
 source = { registry = "https://pypi.org/simple" }
@@ -2117,6 +2204,7 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/55/92/517c5c498c2980c1b6d6b9965dffbe31f3cd7f20f40d00ec4069559c5902/pycryptodome-3.21.0-cp36-abi3-musllinux_1_1_aarch64.whl", hash = "sha256:8898a66425a57bcf15e25fc19c12490b87bd939800f39a03ea2de2aea5e3611a", size = 2160509 },
     { url = "https://files.pythonhosted.org/packages/39/1f/c74288f54d80a20a78da87df1818c6464ac1041d10988bb7d982c4153fbc/pycryptodome-3.21.0-cp36-abi3-musllinux_1_2_i686.whl", hash = "sha256:932c905b71a56474bff8a9c014030bc3c882cee696b448af920399f730a650c2", size = 2329480 },
     { url = "https://files.pythonhosted.org/packages/39/1b/d0b013bf7d1af7cf0a6a4fce13f5fe5813ab225313755367b36e714a63f8/pycryptodome-3.21.0-cp36-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:18caa8cfbc676eaaf28613637a89980ad2fd96e00c564135bf90bc3f0b34dd93", size = 2254397 },
+    { url = "https://files.pythonhosted.org/packages/25/b3/09ff7072e6d96c9939c24cf51d3c389d7c345bf675420355c22402f71b68/pycryptodome-3.21.0-pp27-pypy_73-manylinux2010_x86_64.whl", hash = "sha256:2cb635b67011bc147c257e61ce864879ffe6d03342dc74b6045059dfbdedafca", size = 1691593 },
 ]
 
 [[package]]
@@ -2165,30 +2253,12 @@ wheels = [
 ]
 
 [[package]]
-name = "pynacl"
-version = "1.5.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "cffi", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/a7/22/27582568be639dfe22ddb3902225f91f2f17ceff88ce80e4db396c8986da/PyNaCl-1.5.0.tar.gz", hash = "sha256:8ac7448f09ab85811607bdd21ec2464495ac8b7c66d146bf545b0f08fb9220ba", size = 3392854 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ce/75/0b8ede18506041c0bf23ac4d8e2971b4161cd6ce630b177d0a08eb0d8857/PyNaCl-1.5.0-cp36-abi3-macosx_10_10_universal2.whl", hash = "sha256:401002a4aaa07c9414132aaed7f6836ff98f59277a234704ff66878c2ee4a0d1", size = 349920 },
-    { url = "https://files.pythonhosted.org/packages/59/bb/fddf10acd09637327a97ef89d2a9d621328850a72f1fdc8c08bdf72e385f/PyNaCl-1.5.0-cp36-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_24_aarch64.whl", hash = "sha256:52cb72a79269189d4e0dc537556f4740f7f0a9ec41c1322598799b0bdad4ef92", size = 601722 },
-    { url = "https://files.pythonhosted.org/packages/5d/70/87a065c37cca41a75f2ce113a5a2c2aa7533be648b184ade58971b5f7ccc/PyNaCl-1.5.0-cp36-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a36d4a9dda1f19ce6e03c9a784a2921a4b726b02e1c736600ca9c22029474394", size = 680087 },
-    { url = "https://files.pythonhosted.org/packages/ee/87/f1bb6a595f14a327e8285b9eb54d41fef76c585a0edef0a45f6fc95de125/PyNaCl-1.5.0-cp36-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:0c84947a22519e013607c9be43706dd42513f9e6ae5d39d3613ca1e142fba44d", size = 856678 },
-    { url = "https://files.pythonhosted.org/packages/66/28/ca86676b69bf9f90e710571b67450508484388bfce09acf8a46f0b8c785f/PyNaCl-1.5.0-cp36-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:06b8f6fa7f5de8d5d2f7573fe8c863c051225a27b61e6860fd047b1775807858", size = 1133660 },
-    { url = "https://files.pythonhosted.org/packages/3d/85/c262db650e86812585e2bc59e497a8f59948a005325a11bbbc9ecd3fe26b/PyNaCl-1.5.0-cp36-abi3-musllinux_1_1_aarch64.whl", hash = "sha256:a422368fc821589c228f4c49438a368831cb5bbc0eab5ebe1d7fac9dded6567b", size = 663824 },
-    { url = "https://files.pythonhosted.org/packages/fd/1a/cc308a884bd299b651f1633acb978e8596c71c33ca85e9dc9fa33a5399b9/PyNaCl-1.5.0-cp36-abi3-musllinux_1_1_x86_64.whl", hash = "sha256:61f642bf2378713e2c2e1de73444a3778e5f0a38be6fee0fe532fe30060282ff", size = 1117912 },
-]
-
-[[package]]
 name = "pyopenssl"
 version = "25.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cryptography", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "typing-extensions", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "typing-extensions", marker = "(sys_platform == 'darwin' and python_full_version == '3.11.*') or (sys_platform == 'linux' and python_full_version == '3.11.*')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/9f/26/e25b4a374b4639e0c235527bbe31c0524f26eda701d79456a7e1877f4cc5/pyopenssl-25.0.0.tar.gz", hash = "sha256:cd2cef799efa3936bb08e8ccb9433a575722b9dd986023f1cabc4ae64e9dac16", size = 179573 }
 wheels = [
@@ -2319,6 +2389,19 @@ wheels = [
 ]
 
 [[package]]
+name = "pywry"
+version = "0.6.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "setproctitle", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/60/df/2bd468f465011fb021f45cbe5cc9f1cfe15872c61e1cab2a7962bd4f4860/pywry-0.6.2.tar.gz", hash = "sha256:9bd88c36ab0860728d9e64360010f8abcede43645656030e4a63e69e81a98c95", size = 38983 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fa/0e/0a4b6436433678d49790683ea869e40cca6ecc36f6abdaf01a489298a8f8/pywry-0.6.2-py3-none-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:45d6bb827bf76b2532a9d70b539209d70f37dfb13e9862549b7bff8500ad2495", size = 2303900 },
+    { url = "https://files.pythonhosted.org/packages/02/cc/00c1c93ff5df28cb95a1838f2405f7943e1c0c1a965a6a14670ca3ea9745/pywry-0.6.2-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:1d9ffd826a3a08c132843340e6d896efb7b972b301d045e3239a7dc08d9cac2f", size = 66838493 },
+]
+
+[[package]]
 name = "pyyaml"
 version = "6.0.2"
 source = { registry = "https://pypi.org/simple" }
@@ -2358,7 +2441,7 @@ name = "redis"
 version = "4.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "async-timeout", marker = "(python_full_version <= '3.11.2' and sys_platform == 'darwin') or (python_full_version <= '3.11.2' and sys_platform == 'linux')" },
+    { name = "async-timeout", marker = "(python_full_version <= '3.11.2' and sys_platform == 'darwin' and python_full_version == '3.11.*') or (python_full_version <= '3.11.2' and sys_platform == 'linux' and python_full_version == '3.11.*')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/73/88/63d802c2b18dd9eaa5b846cbf18917c6b2882f20efda398cc16a7500b02c/redis-4.6.0.tar.gz", hash = "sha256:585dc516b9eb042a619ef0a39c3d7d55fe81bdb4df09a52c9cdde0d07bf1aa7d", size = 4561721 }
 wheels = [
@@ -2657,32 +2740,6 @@ wheels = [
 ]
 
 [[package]]
-name = "substrate-interface"
-version = "1.7.11"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "base58", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "certifi", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "ecdsa", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "eth-keys", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "eth-utils", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "idna", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "py-bip39-bindings", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "py-ed25519-zebra-bindings", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "py-sr25519-bindings", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "pycryptodome", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "pynacl", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "requests", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "scalecodec", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "websocket-client", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "xxhash", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/7a/44/825433c906bdb69ab66fd3967c11fcfbcd953241e9d6257fd6a21c4cdc76/substrate-interface-1.7.11.tar.gz", hash = "sha256:4caa5eacb9996edbe76ad12249521b3542bbd8d9d69b96734087201db1fef8f6", size = 79221 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/56/e1/37344b7acd260cbfed13563dcbab391c7c4b0c9eca5ec59aba138c5dca9e/substrate_interface-1.7.11-py3-none-any.whl", hash = "sha256:ce19bc97481769238ed23c752db985a3058637918693f2db6aeed2fab3756075", size = 60273 },
-]
-
-[[package]]
 name = "sympy"
 version = "1.13.1"
 source = { registry = "https://pypi.org/simple" }
@@ -2774,7 +2831,21 @@ dependencies = [
     { name = "fsspec", marker = "sys_platform == 'darwin'" },
     { name = "jinja2", marker = "sys_platform == 'darwin'" },
     { name = "networkx", marker = "sys_platform == 'darwin'" },
-    { name = "sympy", marker = "sys_platform == 'darwin'" },
+    { name = "nvidia-cublas-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux' and sys_platform == 'darwin'" },
+    { name = "nvidia-cuda-cupti-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux' and sys_platform == 'darwin'" },
+    { name = "nvidia-cuda-nvrtc-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux' and sys_platform == 'darwin'" },
+    { name = "nvidia-cuda-runtime-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux' and sys_platform == 'darwin'" },
+    { name = "nvidia-cudnn-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux' and sys_platform == 'darwin'" },
+    { name = "nvidia-cufft-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux' and sys_platform == 'darwin'" },
+    { name = "nvidia-curand-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux' and sys_platform == 'darwin'" },
+    { name = "nvidia-cusolver-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux' and sys_platform == 'darwin'" },
+    { name = "nvidia-cusparse-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux' and sys_platform == 'darwin'" },
+    { name = "nvidia-cusparselt-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux' and sys_platform == 'darwin'" },
+    { name = "nvidia-nccl-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux' and sys_platform == 'darwin'" },
+    { name = "nvidia-nvjitlink-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux' and sys_platform == 'darwin'" },
+    { name = "nvidia-nvtx-cu12", marker = "platform_machine == 'x86_64' and platform_system == 'Linux' and sys_platform == 'darwin'" },
+    { name = "sympy", marker = "sys_platform == 'darwin' and python_full_version == '3.11.*'" },
+    { name = "triton", marker = "platform_machine == 'x86_64' and platform_system == 'Linux' and sys_platform == 'darwin'" },
     { name = "typing-extensions", marker = "sys_platform == 'darwin'" },
 ]
 wheels = [
@@ -2793,7 +2864,7 @@ dependencies = [
     { name = "fsspec", marker = "sys_platform == 'linux'" },
     { name = "jinja2", marker = "sys_platform == 'linux'" },
     { name = "networkx", marker = "sys_platform == 'linux'" },
-    { name = "sympy", marker = "sys_platform == 'linux'" },
+    { name = "sympy", marker = "sys_platform == 'linux' and python_full_version == '3.11.*'" },
     { name = "typing-extensions", marker = "sys_platform == 'linux'" },
 ]
 wheels = [
@@ -2821,6 +2892,9 @@ wheels = [
 name = "tqdm"
 version = "4.67.1"
 source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "colorama", marker = "(platform_system == 'Windows' and sys_platform == 'darwin') or (platform_system == 'Windows' and sys_platform == 'linux')" },
+]
 sdist = { url = "https://files.pythonhosted.org/packages/a8/4b/29b4ef32e036bb34e4ab51796dd745cdba7ed47ad142a9f4a1eb8e0c744d/tqdm-4.67.1.tar.gz", hash = "sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2", size = 169737 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d0/30/dc54f88dd4a2b5dc8a0279bdd7270e735851848b762aeb1c1184ed1f6b14/tqdm-4.67.1-py3-none-any.whl", hash = "sha256:26445eca388f82e72884e0d580d5464cd801a3ea01e63e5601bdff9ba6a48de2", size = 78540 },
@@ -2855,6 +2929,11 @@ sdist = { url = "https://files.pythonhosted.org/packages/21/6b/caf620fae7fbf3594
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7b/9f/92d3091c44cb19add044064af1bf1345cd35fbb84d32a3690f912800a295/transformers-4.48.1-py3-none-any.whl", hash = "sha256:24be0564b0a36d9e433d9a65de248f1545b6f6edce1737669605eb6a8141bbbb", size = 9665001 },
 ]
+
+[[package]]
+name = "triton"
+version = "3.2.0"
+source = { registry = "https://pypi.org/simple" }
 
 [[package]]
 name = "twisted"
@@ -3049,7 +3128,7 @@ dependencies = [
     { name = "docker-pycreds", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "gitpython", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "platformdirs", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "protobuf", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
+    { name = "protobuf", marker = "(sys_platform == 'darwin' and python_full_version == '3.11.*') or (sys_platform == 'linux' and python_full_version == '3.11.*')" },
     { name = "psutil", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "pyyaml", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
     { name = "requests", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
@@ -3096,15 +3175,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/6c/63/53559446a878410fc5a5974feb13d31d78d752eb18aeba59c7fef1af7598/wcwidth-0.2.13.tar.gz", hash = "sha256:72ea0c06399eb286d978fdedb6923a9eb47e1c486ce63e9b4e64fc18303972b5", size = 101301 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/fd/84/fd2ba7aafacbad3c4201d395674fc6348826569da3c0937e75505ead3528/wcwidth-0.2.13-py2.py3-none-any.whl", hash = "sha256:3da69048e4540d84af32131829ff948f1e022c1c6bdb8d6102117aac784f6859", size = 34166 },
-]
-
-[[package]]
-name = "websocket-client"
-version = "1.8.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/e6/30/fba0d96b4b5fbf5948ed3f4681f7da2f9f64512e1d303f94b4cc174c24a5/websocket_client-1.8.0.tar.gz", hash = "sha256:3239df9f44da632f96012472805d40a23281a991027ce11d2f45a6f24ac4c3da", size = 54648 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/5a/84/44687a29792a70e111c5c477230a72c4b957d88d16141199bf9acb7537a3/websocket_client-1.8.0-py3-none-any.whl", hash = "sha256:17b44cc997f5c498e809b22cdf2d9c7a9e71c02c8cc2b6c56e7c2d1239bfa526", size = 58826 },
 ]
 
 [[package]]
